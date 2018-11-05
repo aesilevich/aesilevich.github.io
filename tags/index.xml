@@ -5,7 +5,6 @@
     <link>https://aesilevich.github.io/tags/</link>
     <description>Recent content in Tags on Esil Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
     <lastBuildDate>Thu, 02 Feb 2017 22:12:17 +0700</lastBuildDate>
     
 	<atom:link href="https://aesilevich.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
@@ -23,9 +22,18 @@
     <item>
       <title>Gui</title>
       <link>https://aesilevich.github.io/tags/gui/</link>
-      <pubDate>Thu, 02 Feb 2017 22:12:17 +0700</pubDate>
+      <pubDate>Mon, 05 Nov 2018 02:14:00 +0700</pubDate>
       
       <guid>https://aesilevich.github.io/tags/gui/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>It</title>
+      <link>https://aesilevich.github.io/tags/it/</link>
+      <pubDate>Mon, 05 Nov 2018 02:14:00 +0700</pubDate>
+      
+      <guid>https://aesilevich.github.io/tags/it/</guid>
       <description></description>
     </item>
     

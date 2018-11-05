@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+		<title>
+				Использование памяти в современных GUI приложениях &middot; Esil Blog
+		</title>
+	
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+	
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="https://aesilevich.github.ioimages/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="https://aesilevich.github.ioimages/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="https://aesilevich.github.ioimages/apple-touch-icon.png">
+	
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Esil Blog" />
+	</head>
+	
+    <body>
+        		<nav class="nav">
+			<div class="nav-container">
+				<a href="/">
+					<h2 class="nav-title">Esil Blog</h2>
+				</a>
+				
+
+			</div>
+		</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+        <time datetime="2018-11-05 02:14:00 &#43;0700 &#43;0700">November 5, 2018</time>
+</div>
+
+		<h1 class="post-title">Использование памяти в современных GUI приложениях</h1>
+
+
+
+		
+
+		<p>Недавно со временем обнаружил, что имеющихся у меня 12 GiB памяти на Linux Debian стало нехватать для повседневной работы,
+в процессе которой мне требуется собирать тонны C++ кода в несколько потоков, а дело это затратное по памяти.</p>
+
+<p>Понятно, что требования к памяти приложений со временим растут все больше и больше, в том числе и
+компиляторов gcc и clang, но не так давно количество перешло в качество и я начал разбираться кто
+конкретно жрет память (ну, помимо тулов сборки) и пытаться это дело исправить.
+</p>
+
+<p>Собственно, разбираться долго не пришлось. Выяснилось, что виноваты Skype и Slack, именно те приложения, которые используют
+новомодный web-ui. Skype имеет 4 запущенных процесса, которые суммарно потребляют почти 500 MiB. Slack имеет пять процессов,
+потребляющих суммарно 800 MiB. Итого получается 1300 MiB для двух программулек, которые висят и ничего не делают, и единственная
+задача которых - это посылать и принимать сообщения.</p>
+
+<p>Я понмаю, конечно, что сейчас не принято экономить память, которая дешевая и которой много, но 1.27 Гиб - это уже явно перебор.
+Это 8% от максимального количества памяти, которое вообще в принципе возможно установить на большинство современных ноутбуков.
+Получается, что запущенные Skype и Slack реально мешают работе. Как вообще теперь с этим жить теперь?</p>
+
+		<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "aesilevich-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/multiple-inheritance/" class="left arrow">&#8592;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        		<footer>
+			<span>
+			&copy; <time datetime="2018-11-05 05:38:55.551069675 &#43;0100 CET m=&#43;0.041142738">2018</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			</span>
+		</footer>
+
+    </body>
+</html>

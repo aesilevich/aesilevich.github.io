@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="en">
     <head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,26 +56,24 @@
 реализации Model-View с абстрактными моделями, то в интерфейсе абстрактного
 Subject должны быть объявлены методы для регистрации и дерегистрации
 обозревателей, например так (в примере использован Boost.Signals):
-<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><code class="language-cpp" data-lang="cpp"><span></span><span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">my_model</span> {
-<span style="color: #006699; font-weight: bold">public</span><span style="color: #555555">:</span>
-    <span style="color: #006699; font-weight: bold">virtual</span> connection connect_changed(<span style="color: #006699; font-weight: bold">const</span> std<span style="color: #555555">::</span>function<span style="color: #555555">&lt;</span><span style="color: #007788; font-weight: bold">void</span>()<span style="color: #555555">&gt;</span> <span style="color: #555555">&amp;</span> h) <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">class</span><span style=""> </span><span style="color:#2b91af">my_model</span> {
+<span style="color:#00f">public</span>:
+    <span style="color:#00f">virtual</span> connection connect_changed(<span style="color:#00f">const</span> std::function&lt;<span style="color:#2b91af">void</span>()&gt; &amp; h) = 0;
 };
-</code></pre></div>
-</p>
+</code></pre></div></p>
 
 <p>При этом во всех конкретных реализациях модели этот метод будет делать
 ровно одно и то же: подключаться к сигналу Boost.Signals:
-<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><code class="language-cpp" data-lang="cpp"><span></span><span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">my_model_impl</span><span style="color: #555555">:</span> <span style="color: #006699; font-weight: bold">virtual</span> <span style="color: #006699; font-weight: bold">public</span> my_model {
-<span style="color: #006699; font-weight: bold">public</span><span style="color: #555555">:</span>
-    connection connect_changed(<span style="color: #006699; font-weight: bold">const</span> std<span style="color: #555555">::</span>function<span style="color: #555555">&lt;</span><span style="color: #007788; font-weight: bold">void</span>()<span style="color: #555555">&gt;</span> <span style="color: #555555">&amp;</span> h) <span style="color: #006699; font-weight: bold">override</span> {
-        <span style="color: #006699; font-weight: bold">return</span> changed_signal_.connect(handler);
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">class</span><span style=""> </span><span style="color:#2b91af">my_model_impl</span>: <span style="color:#00f">virtual</span> <span style="color:#00f">public</span> my_model {
+<span style="color:#00f">public</span>:
+    connection connect_changed(<span style="color:#00f">const</span> std::function&lt;<span style="color:#2b91af">void</span>()&gt; &amp; h) <span style="color:#00f">override</span> {
+        <span style="color:#00f">return</span> changed_signal_.connect(handler);
     }
 
-<span style="color: #006699; font-weight: bold">private</span><span style="color: #555555">:</span>
-    signal<span style="color: #555555">&lt;</span><span style="color: #007788; font-weight: bold">void</span>()<span style="color: #555555">&gt;</span> changed_signal_;
+<span style="color:#00f">private</span>:
+    signal&lt;<span style="color:#2b91af">void</span>()&gt; changed_signal_;
 };
-</code></pre></div>
-</p>
+</code></pre></div></p>
 
 <p>Понятно, что <strong>my_model_impl</strong> может реализовывать много разных интерфейсов,
 которые в свою очередь могут быть унаследованы от <strong>my_model</strong>, поэтому могут
@@ -86,26 +84,25 @@ Subject должны быть объявлены методы для регис�
 почему бы не перенести его реализацию в класс <strong>my_model</strong>? Ну и вообще это логично:
 сигнал - это часть интерфейса, а не реализации интерфейса.</p>
 
-<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><code class="language-cpp" data-lang="cpp"><span></span><span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">my_model</span> {
-<span style="color: #006699; font-weight: bold">public</span><span style="color: #555555">:</span>
-    connection connect_changed(<span style="color: #006699; font-weight: bold">const</span> std<span style="color: #555555">::</span>function<span style="color: #555555">&lt;</span><span style="color: #007788; font-weight: bold">void</span>()<span style="color: #555555">&gt;</span> <span style="color: #555555">&amp;</span> h) {
-        <span style="color: #006699; font-weight: bold">return</span> changed_signal_.connect(handler);
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">class</span><span style=""> </span><span style="color:#2b91af">my_model</span> {
+<span style="color:#00f">public</span>:
+    connection connect_changed(<span style="color:#00f">const</span> std::function&lt;<span style="color:#2b91af">void</span>()&gt; &amp; h) {
+        <span style="color:#00f">return</span> changed_signal_.connect(handler);
     }
 
-<span style="color: #006699; font-weight: bold">private</span><span style="color: #555555">:</span>
-    signal<span style="color: #555555">&lt;</span><span style="color: #007788; font-weight: bold">void</span>()<span style="color: #555555">&gt;</span> changed_signal_;
+<span style="color:#00f">private</span>:
+    signal&lt;<span style="color:#2b91af">void</span>()&gt; changed_signal_;
 };
 
-<span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">another_model</span><span style="color: #555555">:</span> <span style="color: #006699; font-weight: bold">virtual</span> <span style="color: #006699; font-weight: bold">public</span> my_model {
+<span style="color:#00f">class</span><span style=""> </span><span style="color:#2b91af">another_model</span>: <span style="color:#00f">virtual</span> <span style="color:#00f">public</span> my_model {
     ...
 };
 
-<span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">my_model_impl</span><span style="color: #555555">:</span> <span style="color: #006699; font-weight: bold">virtual</span> <span style="color: #006699; font-weight: bold">public</span> my_model,
-                     <span style="color: #006699; font-weight: bold">virtual</span> <span style="color: #006699; font-weight: bold">public</span> another_model {
-    <span style="color: #0099FF; font-style: italic">// nothing to do with signals</span>
-};
+<span style="color:#00f">class</span><span style=""> </span><span style="color:#2b91af">my_model_impl</span>: <span style="color:#00f">virtual</span> <span style="color:#00f">public</span> my_model,
+                     <span style="color:#00f">virtual</span> <span style="color:#00f">public</span> another_model {
+    <span style="color:#008000">// nothing to do with signals
+</span><span style="color:#008000"></span>};
 </code></pre></div>
-
 
 <p>Получаем виртуальное множественное наследование от <strong>my_model</strong>.</p>
 
@@ -133,6 +130,7 @@ Subject должны быть объявлены методы для регис�
 	</div>
 
 	<div class="pagination">
+		<a href="/posts/gui-memory-usage/" class="right arrow">&#8594;</a>
 
 		<a href="#" class="top">Top</a>
 	</div>
@@ -141,7 +139,7 @@ Subject должны быть объявлены методы для регис�
 
         		<footer>
 			<span>
-			&copy; <time datetime="2018-11-05 04:09:26.669016731 &#43;0100 CET m=&#43;0.114525417">2018</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2018-11-05 05:38:55.554460295 &#43;0100 CET m=&#43;0.044533360">2018</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 
