@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+		<title>
+				Применение множественному наследованию в C&#43;&#43; &middot; Esil Blog
+		</title>
+	
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+	
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="https://aesilevich.github.ioimages/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="https://aesilevich.github.ioimages/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="https://aesilevich.github.ioimages/apple-touch-icon.png">
+	
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Esil Blog" />
+	</head>
+	
+    <body>
+        		<nav class="nav">
+			<div class="nav-container">
+				<a href="/">
+					<h2 class="nav-title">Esil Blog</h2>
+				</a>
+				
+
+			</div>
+		</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+        <time datetime="2017-02-02 22:12:17 &#43;0700 &#43;0700">February 2, 2017</time>
+</div>
+
+		<h1 class="post-title">Применение множественному наследованию в C&#43;&#43;</h1>
+
+
+
+		
+
+		<p>Недавно понял, что похоже нашел возможно единственное полезное применение
+виртуальному множественному наследованию в C++, в котором базовый класс
+не является чисто абстрактным, т. е. содержит реализацию методов и
+переменные-члены.
+</p>
+
+<p>Когда используешь паттерн Observer с абстрактным Subject, например при
+реализации Model-View с абстрактными моделями, то в интерфейсе абстрактного
+Subject должны быть объявлены методы для регистрации и дерегистрации
+обозревателей, например так (в примере использован Boost.Signals):
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><code class="language-cpp" data-lang="cpp"><span></span><span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">my_model</span> {
+<span style="color: #006699; font-weight: bold">public</span><span style="color: #555555">:</span>
+    <span style="color: #006699; font-weight: bold">virtual</span> connection connect_changed(<span style="color: #006699; font-weight: bold">const</span> std<span style="color: #555555">::</span>function<span style="color: #555555">&lt;</span><span style="color: #007788; font-weight: bold">void</span>()<span style="color: #555555">&gt;</span> <span style="color: #555555">&amp;</span> h) <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+};
+</code></pre></div>
+</p>
+
+<p>При этом во всех конкретных реализациях модели этот метод будет делать
+ровно одно и то же: подключаться к сигналу Boost.Signals:
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><code class="language-cpp" data-lang="cpp"><span></span><span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">my_model_impl</span><span style="color: #555555">:</span> <span style="color: #006699; font-weight: bold">virtual</span> <span style="color: #006699; font-weight: bold">public</span> my_model {
+<span style="color: #006699; font-weight: bold">public</span><span style="color: #555555">:</span>
+    connection connect_changed(<span style="color: #006699; font-weight: bold">const</span> std<span style="color: #555555">::</span>function<span style="color: #555555">&lt;</span><span style="color: #007788; font-weight: bold">void</span>()<span style="color: #555555">&gt;</span> <span style="color: #555555">&amp;</span> h) <span style="color: #006699; font-weight: bold">override</span> {
+        <span style="color: #006699; font-weight: bold">return</span> changed_signal_.connect(handler);
+    }
+
+<span style="color: #006699; font-weight: bold">private</span><span style="color: #555555">:</span>
+    signal<span style="color: #555555">&lt;</span><span style="color: #007788; font-weight: bold">void</span>()<span style="color: #555555">&gt;</span> changed_signal_;
+};
+</code></pre></div>
+</p>
+
+<p>Понятно, что <strong>my_model_impl</strong> может реализовывать много разных интерфейсов,
+которые в свою очередь могут быть унаследованы от <strong>my_model</strong>, поэтому могут
+возникать случаи, когда <strong>my_model</strong> будет участвовать несколько раз в иерархии
+наследования.</p>
+
+<p>Если метод <strong>connect_changed</strong> во всех реализациях делает одно и то же, то
+почему бы не перенести его реализацию в класс <strong>my_model</strong>? Ну и вообще это логично:
+сигнал - это часть интерфейса, а не реализации интерфейса.</p>
+
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><code class="language-cpp" data-lang="cpp"><span></span><span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">my_model</span> {
+<span style="color: #006699; font-weight: bold">public</span><span style="color: #555555">:</span>
+    connection connect_changed(<span style="color: #006699; font-weight: bold">const</span> std<span style="color: #555555">::</span>function<span style="color: #555555">&lt;</span><span style="color: #007788; font-weight: bold">void</span>()<span style="color: #555555">&gt;</span> <span style="color: #555555">&amp;</span> h) {
+        <span style="color: #006699; font-weight: bold">return</span> changed_signal_.connect(handler);
+    }
+
+<span style="color: #006699; font-weight: bold">private</span><span style="color: #555555">:</span>
+    signal<span style="color: #555555">&lt;</span><span style="color: #007788; font-weight: bold">void</span>()<span style="color: #555555">&gt;</span> changed_signal_;
+};
+
+<span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">another_model</span><span style="color: #555555">:</span> <span style="color: #006699; font-weight: bold">virtual</span> <span style="color: #006699; font-weight: bold">public</span> my_model {
+    ...
+};
+
+<span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">my_model_impl</span><span style="color: #555555">:</span> <span style="color: #006699; font-weight: bold">virtual</span> <span style="color: #006699; font-weight: bold">public</span> my_model,
+                     <span style="color: #006699; font-weight: bold">virtual</span> <span style="color: #006699; font-weight: bold">public</span> another_model {
+    <span style="color: #0099FF; font-style: italic">// nothing to do with signals</span>
+};
+</code></pre></div>
+
+
+<p>Получаем виртуальное множественное наследование от <strong>my_model</strong>.</p>
+
+		<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "aesilevich-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+	</div>
+
+	<div class="pagination">
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        		<footer>
+			<span>
+			&copy; <time datetime="2018-11-05 04:09:26.669016731 &#43;0100 CET m=&#43;0.114525417">2018</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			</span>
+		</footer>
+
+    </body>
+</html>
