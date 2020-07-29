@@ -1,14 +1,24 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Esil Blog</title>
     <link>https://aesilevich.github.io/posts/</link>
     <description>Recent content in Posts on Esil Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 05 Nov 2018 02:14:00 +0700</lastBuildDate>
+    <lastBuildDate>Wed, 29 Jul 2020 12:00:00 +0700</lastBuildDate>
     
 	<atom:link href="https://aesilevich.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>User-defined сlass template argument deduction guides в C&#43;&#43;17</title>
+      <link>https://aesilevich.github.io/posts/ctad-user-defined-guides/</link>
+      <pubDate>Wed, 29 Jul 2020 12:00:00 +0700</pubDate>
+      
+      <guid>https://aesilevich.github.io/posts/ctad-user-defined-guides/</guid>
+      <description>&lt;p&gt;Недавно внезапно обнаружил для себя user-defined deduction guides для вывода типов
+параметров шаблонных классов в С++17.&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Использование памяти в современных GUI приложениях</title>
@@ -18,11 +28,9 @@
       <guid>https://aesilevich.github.io/posts/gui-memory-usage/</guid>
       <description>&lt;p&gt;Недавно со временем обнаружил, что имеющихся у меня 12 GiB памяти на Linux Debian стало нехватать для повседневной работы,
 в процессе которой мне требуется собирать тонны C++ кода в несколько потоков, а дело это затратное по памяти.&lt;/p&gt;
-
 &lt;p&gt;Понятно, что требования к памяти приложений со временим растут все больше и больше, в том числе и
 компиляторов gcc и clang, но не так давно количество перешло в качество и я начал разбираться кто
-конкретно жрет память (ну, помимо тулов сборки) и пытаться это дело исправить.
-&lt;/p&gt;</description>
+конкретно жрет память (ну, помимо тулов сборки) и пытаться это дело исправить.&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -34,8 +42,7 @@
       <description>&lt;p&gt;Недавно понял, что похоже нашел возможно единственное полезное применение
 виртуальному множественному наследованию в C++, в котором базовый класс
 не является чисто абстрактным, т. е. содержит реализацию методов и
-переменные-члены.
-&lt;/p&gt;</description>
+переменные-члены.&lt;/p&gt;</description>
     </item>
     
   </channel>

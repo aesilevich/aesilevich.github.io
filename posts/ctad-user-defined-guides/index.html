@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>User-defined сlass template argument deduction guides в C&#43;&#43;17 &middot; Esil Blog</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Esil Blog" />
+	</head>
+
+    <body>
+        		<nav class="nav">
+			<div class="nav-container">
+				<a href="/">
+					<h2 class="nav-title">Esil Blog</h2>
+				</a>
+				<ul>
+    
+    
+</ul>
+			</div>
+		</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-07-29 12:00:00 &#43;0700 &#43;07">July 29, 2020</time>
+</div>
+		<h1 class="post-title">User-defined сlass template argument deduction guides в C&#43;&#43;17</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>Недавно внезапно обнаружил для себя user-defined deduction guides для вывода типов
+параметров шаблонных классов в С++17.</p>
+<p>Class template argument deduction (CTAD) - это
+возможность вывода компилятором типов параметров шаблонного класса по типу передаваемых
+в конструктор аргументов, которую добавили в C++17. Сделано это было для того, чтобы
+например можно было писать <code>std::pair{10, 20.0f}</code> вместо <code>std::pair&lt;int, float&gt;{10, 20.0f}</code>.
+Компилятор при этом подбирает параметры шаблонного класса <code>std::pair</code> по параметрам <code>int</code>
+и <code>float</code> аргументов, передаваемых в конструктор.</p>
+<p>Про CTAD, думаю, известно почти всем, потому что это была одна из главных новых
+языковых фич, добавленных в C++17, которая наконец-то избавляла всех от мучений с
+написанием всех параметров шаблонных классов. Оказывается вместе с этим в C++17
+была добавлена возможность вручную писать правила для вывода типов шаблонных классов.</p>
+<p>Работает это следующим образом. Пусть имеется шаблонный класс <code>my_class</code>:
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> T&gt;
+<span style="color:#00f">class</span> <span style="color:#2b91af">my_class</span> {
+<span style="color:#00f">public</span>:
+    my_class(T val) {}
+};
+</code></pre></div></p>
+<p>Стандартный вывод параметров шаблонного класса будет работать так, что при передаче значения
+типа <code>int</code> в конструктор <code>my_class</code> будет создаваться экзмепляр типа <code>my_class&lt;int&gt;</code>. Но допустим
+мы хотим, чтобы при этом создавался экземпляр типа <code>my_class&lt;long&gt;</code>? Сделать это можно,
+написав правило вывода параметров шаблонного класса следующим образом:
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">my_class(<span style="color:#2b91af">int</span>) -&gt; my_class&lt;<span style="color:#2b91af">long</span>&gt;;
+</code></pre></div></p>
+<p>Теперь результат вызова конструктора <code>my_class{10}</code> будет иметь тип <code>my_class&lt;long&gt;</code>, а не
+<code>my_class&lt;int&gt;</code>.</p>
+<p>Правила вывода параметров сами могут быть шаблонными. Например, можно сделать так, чтобы
+при вызове конструктора с любым параметром типа <code>T</code> тип параметра шаблона был какой-нибудь обёрткой
+над <code>T</code>:
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> T&gt;
+<span style="color:#00f">class</span> <span style="color:#2b91af">my_wrapper</span> {
+<span style="color:#00f">public</span>:
+    <span style="color:#008000">// разрешено неявное преобразование из T
+</span><span style="color:#008000"></span>    my_wrapper(T val) {}
+};
+
+<span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> T&gt;
+<span style="color:#00f">class</span> <span style="color:#2b91af">my_class</span> {
+<span style="color:#00f">public</span>:
+    my_class(T val) {}
+};
+
+<span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> T&gt;
+my_class(T x) -&gt; my_class&lt;my_wrapper&lt;T&gt;&gt;;
+
+<span style="color:#008000">// ...
+</span><span style="color:#008000"></span>
+<span style="color:#008000">// тип x будет my_class&lt;my_wrapper&lt;std::string&gt;&gt;
+</span><span style="color:#008000"></span>my_class x{std::string{<span style="color:#a31515">&#34;aaaaa&#34;</span>}};
+</code></pre></div></p>
+<p>Кстати, эта техника используется в стандартной библиотеке ranges из C++20 для того, чтобы
+для некоторого контейнера <code>c</code> и функтора <code>fn</code> при вызове <code>transform_view{c, fn}</code> создавался экземпляр класса
+<code>transform_view&lt;ref_view&lt;Container&gt;, Functor&gt;</code>, а ссылка на контейнер неявно преобразовывалась
+в экземпляр <code>ref_view</code>. Именно оттуда я и узнал про определённые пользователем правила вывода типов
+шаблонных классов, когда разбирался как это работает.</p>
+
+		<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "aesilevich-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/gui-memory-usage/" class="left arrow">&#8592;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        		<footer>
+			<span>
+			&copy; <time datetime="2020-07-29 13:20:43.151567587 &#43;0700 &#43;07 m=&#43;0.121670647">2020</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			</span>
+		</footer>
+
+    </body>
+</html>

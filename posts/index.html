@@ -3,24 +3,21 @@
     <head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	
-		<title>
-				Posts &middot; Esil Blog
-		</title>
-	
+
+		<title>Posts &middot; Esil Blog</title>
+
 		
   		<link rel="stylesheet" href="/css/style.css">
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
-	
+		<link rel="stylesheet" href="/css/fonts.css">
 		
-		<link rel="icon" type="image/png" sizes="32x32" href="https://aesilevich.github.ioimages/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="https://aesilevich.github.ioimages/favicon-16x16.png">
-		<link rel="apple-touch-icon" sizes="180x180" href="https://aesilevich.github.ioimages/apple-touch-icon.png">
-	
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
 		
-		<link href="https://aesilevich.github.io/posts/index.xml" rel="alternate" type="application/rss+xml" title="Esil Blog" />
+		<link href="/posts/index.xml" rel="alternate" type="application/rss+xml" title="Esil Blog" />
 	</head>
-	
+
     <body>
         		<nav class="nav">
 			<div class="nav-container">
@@ -28,11 +25,9 @@
 					<h2 class="nav-title">Esil Blog</h2>
 				</a>
 				<ul>
-
-    <li><a href=/index.xml><img class="nav-title" style="margin-left:2rem" src=/images/rss.svg width=20px height=20px> RSS feed</a></li>
-    <li><a href=https://github.com/aesilevich>Github</a></li>
+    
+    
 </ul>
-
 			</div>
 		</nav>
 
@@ -41,44 +36,51 @@
 <main>
 	<div class="catalogue">
 		
-			    <div class="catalogue-item">
-        <time datetime="2018-11-05 02:14:00 &#43;0700 &#43;0700" class="catalogue-time">November 5, 2018</time>
-        <h1 class="catalogue-title"><a style="color:inherit" href="https://aesilevich.github.io/posts/gui-memory-usage/">Использование памяти в современных GUI приложениях</a></h1>
+			<a href="https://aesilevich.github.io/posts/ctad-user-defined-guides/" class="catalogue-item">
+    <div>
+        <time datetime="2020-07-29 12:00:00 &#43;0700 &#43;07" class="catalogue-time">July 29, 2020</time>
+        <h1 class="catalogue-title">User-defined сlass template argument deduction guides в C&#43;&#43;17</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+            <p>Недавно внезапно обнаружил для себя user-defined deduction guides для вывода типов
+параметров шаблонных классов в С++17.</p>
+        </p>
+    </div>
+</a>
+
+		
+			<a href="https://aesilevich.github.io/posts/gui-memory-usage/" class="catalogue-item">
+    <div>
+        <time datetime="2018-11-05 02:14:00 &#43;0700 &#43;07" class="catalogue-time">November 5, 2018</time>
+        <h1 class="catalogue-title">Использование памяти в современных GUI приложениях</h1>
+        <div class="catalogue-line"></div>
+
         <p>
             <p>Недавно со временем обнаружил, что имеющихся у меня 12 GiB памяти на Linux Debian стало нехватать для повседневной работы,
 в процессе которой мне требуется собирать тонны C++ кода в несколько потоков, а дело это затратное по памяти.</p>
-
 <p>Понятно, что требования к памяти приложений со временим растут все больше и больше, в том числе и
 компиляторов gcc и clang, но не так давно количество перешло в качество и я начал разбираться кто
-конкретно жрет память (ну, помимо тулов сборки) и пытаться это дело исправить.
-</p>
-            
-                
-                <div>
-                    <a href="/posts/gui-memory-usage/">Read More…</a>
-                </div>
-            
+конкретно жрет память (ну, помимо тулов сборки) и пытаться это дело исправить.</p>
         </p>
     </div>
+</a>
 
 		
-			    <div class="catalogue-item">
-        <time datetime="2017-02-02 22:12:17 &#43;0700 &#43;0700" class="catalogue-time">February 2, 2017</time>
-        <h1 class="catalogue-title"><a style="color:inherit" href="https://aesilevich.github.io/posts/multiple-inheritance/">Применение множественному наследованию в C&#43;&#43;</a></h1>
+			<a href="https://aesilevich.github.io/posts/multiple-inheritance/" class="catalogue-item">
+    <div>
+        <time datetime="2017-02-02 22:12:17 &#43;0700 &#43;07" class="catalogue-time">February 2, 2017</time>
+        <h1 class="catalogue-title">Применение множественному наследованию в C&#43;&#43;</h1>
+        <div class="catalogue-line"></div>
+
         <p>
             <p>Недавно понял, что похоже нашел возможно единственное полезное применение
 виртуальному множественному наследованию в C++, в котором базовый класс
 не является чисто абстрактным, т. е. содержит реализацию методов и
-переменные-члены.
-</p>
-            
-                
-                <div>
-                    <a href="/posts/multiple-inheritance/">Read More…</a>
-                </div>
-            
+переменные-члены.</p>
         </p>
     </div>
+</a>
 
 		
 	</div>
@@ -93,11 +95,8 @@
 
 
         		<footer>
-                        <p>
-                        <span>Subscribe via <a href=/index.xml>RSS</a></span>
-                        </p>
 			<span>
-			Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2020-07-29 13:20:43.154703871 &#43;0700 &#43;07 m=&#43;0.124806860">2020</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

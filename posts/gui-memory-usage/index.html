@@ -3,24 +3,21 @@
     <head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	
-		<title>
-				Использование памяти в современных GUI приложениях &middot; Esil Blog
-		</title>
-	
+
+		<title>Использование памяти в современных GUI приложениях &middot; Esil Blog</title>
+
 		
   		<link rel="stylesheet" href="/css/style.css">
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
-	
+		<link rel="stylesheet" href="/css/fonts.css">
 		
-		<link rel="icon" type="image/png" sizes="32x32" href="https://aesilevich.github.ioimages/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="https://aesilevich.github.ioimages/favicon-16x16.png">
-		<link rel="apple-touch-icon" sizes="180x180" href="https://aesilevich.github.ioimages/apple-touch-icon.png">
-	
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
 		
 		<link href="" rel="alternate" type="application/rss+xml" title="Esil Blog" />
 	</head>
-	
+
     <body>
         		<nav class="nav">
 			<div class="nav-container">
@@ -28,11 +25,9 @@
 					<h2 class="nav-title">Esil Blog</h2>
 				</a>
 				<ul>
-
-    <li><a href=/index.xml><img class="nav-title" style="margin-left:2rem" src=/images/rss.svg width=20px height=20px> RSS feed</a></li>
-    <li><a href=https://github.com/aesilevich>Github</a></li>
+    
+    
 </ul>
-
 			</div>
 		</nav>
 
@@ -41,28 +36,25 @@
 <main>
 	<div class="post">
 		<div class="post-info">
-        <time datetime="2018-11-05 02:14:00 &#43;0700 &#43;0700">November 5, 2018</time>
+    <span>Written by</span>
+        
+        <br>
+        <span>on&nbsp;</span><time datetime="2018-11-05 02:14:00 &#43;0700 &#43;07">November 5, 2018</time>
 </div>
-
 		<h1 class="post-title">Использование памяти в современных GUI приложениях</h1>
-
-
+<div class="post-line"></div>
 
 		
 
 		<p>Недавно со временем обнаружил, что имеющихся у меня 12 GiB памяти на Linux Debian стало нехватать для повседневной работы,
 в процессе которой мне требуется собирать тонны C++ кода в несколько потоков, а дело это затратное по памяти.</p>
-
 <p>Понятно, что требования к памяти приложений со временим растут все больше и больше, в том числе и
 компиляторов gcc и clang, но не так давно количество перешло в качество и я начал разбираться кто
-конкретно жрет память (ну, помимо тулов сборки) и пытаться это дело исправить.
-</p>
-
+конкретно жрет память (ну, помимо тулов сборки) и пытаться это дело исправить.</p>
 <p>Собственно, разбираться долго не пришлось. Выяснилось, что виноваты Skype и Slack, именно те приложения, которые используют
 новомодный web-ui. Skype имеет 4 запущенных процесса, которые суммарно потребляют почти 500 MiB. Slack имеет пять процессов,
 потребляющих суммарно 800 MiB. Итого получается 1300 MiB для двух программулек, которые висят и ничего не делают, и единственная
 задача которых - это посылать и принимать сообщения.</p>
-
 <p>Я понмаю, конечно, что сейчас не принято экономить память, которая дешевая и которой много, но 1.27 Гиб - это уже явно перебор.
 Это 8% от максимального количества памяти, которое вообще в принципе возможно установить на большинство современных ноутбуков.
 Получается, что запущенные Skype и Slack реально мешают работе. Как вообще теперь с этим жить теперь?</p>
@@ -92,6 +84,7 @@
 
 	<div class="pagination">
 		<a href="/posts/multiple-inheritance/" class="left arrow">&#8592;</a>
+		<a href="/posts/ctad-user-defined-guides/" class="right arrow">&#8594;</a>
 
 		<a href="#" class="top">Top</a>
 	</div>
@@ -99,11 +92,8 @@
 
 
         		<footer>
-                        <p>
-                        <span>Subscribe via <a href=/index.xml>RSS</a></span>
-                        </p>
 			<span>
-			Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2020-07-29 13:20:43.146585843 &#43;0700 &#43;07 m=&#43;0.116689034">2020</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

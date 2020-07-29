@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Mvc on Esil Blog</title>
+    <title>mvc on Esil Blog</title>
     <link>https://aesilevich.github.io/tags/mvc/</link>
-    <description>Recent content in Mvc on Esil Blog</description>
+    <description>Recent content in mvc on Esil Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Thu, 02 Feb 2017 22:12:17 +0700</lastBuildDate>
     
@@ -19,8 +19,7 @@
       <description>&lt;p&gt;Недавно понял, что похоже нашел возможно единственное полезное применение
 виртуальному множественному наследованию в C++, в котором базовый класс
 не является чисто абстрактным, т. е. содержит реализацию методов и
-переменные-члены.
-&lt;/p&gt;</description>
+переменные-члены.&lt;/p&gt;</description>
     </item>
     
   </channel>
