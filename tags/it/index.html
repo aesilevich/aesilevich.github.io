@@ -37,6 +37,46 @@
     <h1>Tag it</h1>
 	<div class="catalogue">
 		
+			<a href="https://aesilevich.github.io/posts/ref-qualifiers/" class="catalogue-item">
+    <div>
+        <time datetime="2021-01-12 12:00:00 &#43;0700 &#43;07" class="catalogue-time">January 12, 2021</time>
+        <h1 class="catalogue-title">Ref-qualifiers</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+            <p>Сегодня похоже день каких-то удивительных открытий.
+Сейчас копался в исходниках ranges в libstdc++ и наткнулся на вот такое объявление функции-члена в классе: <code>void foo() &amp;&amp;</code>.
+Оказывается, что в C++11 были введены по аналогии с квалификаторами const и volatile квалификаторы rvalue и lvalue references
+на функции-члены.</p>
+        </p>
+    </div>
+</a>
+
+		
+			<a href="https://aesilevich.github.io/posts/inline-friend-function/" class="catalogue-item">
+    <div>
+        <time datetime="2021-01-12 12:00:00 &#43;0700 &#43;07" class="catalogue-time">January 12, 2021</time>
+        <h1 class="catalogue-title">Определение тела friend функции внутри класса</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+            <p>Век живи - век учись. Сейчас внезапно для себя обнаружил, что в C++ тело
+friend-функции можно определять прямо внутри класса:
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">struct</span> <span style="color:#2b91af">cls</span> {
+    <span style="color:#00f">friend</span> <span style="color:#2b91af">void</span> foo(cls &amp; c) {
+    }
+};
+
+<span style="color:#008000">// ...
+</span><span style="color:#008000"></span>
+cls c;
+foo(c);
+</code></pre></div></p>
+        </p>
+    </div>
+</a>
+
+		
 			<a href="https://aesilevich.github.io/posts/ctad-user-defined-guides/" class="catalogue-item">
     <div>
         <time datetime="2020-07-29 12:00:00 &#43;0700 &#43;07" class="catalogue-time">July 29, 2020</time>
@@ -81,7 +121,7 @@
 
         		<footer>
 			<span>
-			&copy; <time datetime="2020-07-29 13:20:43.151598841 &#43;0700 &#43;07 m=&#43;0.121701841">2020</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2021-01-17 16:43:49.672941739 &#43;0700 &#43;07 m=&#43;0.389405903">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

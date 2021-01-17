@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Определение тела friend функции внутри класса &middot; Esil Blog</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Esil Blog" />
+	</head>
+
+    <body>
+        		<nav class="nav">
+			<div class="nav-container">
+				<a href="/">
+					<h2 class="nav-title">Esil Blog</h2>
+				</a>
+				<ul>
+    
+    
+</ul>
+			</div>
+		</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        
+        <br>
+        <span>on&nbsp;</span><time datetime="2021-01-12 12:00:00 &#43;0700 &#43;07">January 12, 2021</time>
+</div>
+		<h1 class="post-title">Определение тела friend функции внутри класса</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>Век живи - век учись. Сейчас внезапно для себя обнаружил, что в C++ тело
+friend-функции можно определять прямо внутри класса:
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">struct</span> <span style="color:#2b91af">cls</span> {
+    <span style="color:#00f">friend</span> <span style="color:#2b91af">void</span> foo(cls &amp; c) {
+    }
+};
+
+<span style="color:#008000">// ...
+</span><span style="color:#008000"></span>
+cls c;
+foo(c);
+</code></pre></div></p>
+
+		<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "aesilevich-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/ctad-user-defined-guides/" class="left arrow">&#8592;</a>
+		<a href="/posts/ref-qualifiers/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        		<footer>
+			<span>
+			&copy; <time datetime="2021-01-17 16:43:49.660302208 &#43;0700 &#43;07 m=&#43;0.376766331">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			</span>
+		</footer>
+
+    </body>
+</html>

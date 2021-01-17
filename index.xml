@@ -5,10 +5,42 @@
     <link>https://aesilevich.github.io/</link>
     <description>Recent content on Esil Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 29 Jul 2020 12:00:00 +0700</lastBuildDate>
+    <lastBuildDate>Tue, 12 Jan 2021 12:00:00 +0700</lastBuildDate>
     
 	<atom:link href="https://aesilevich.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Ref-qualifiers</title>
+      <link>https://aesilevich.github.io/posts/ref-qualifiers/</link>
+      <pubDate>Tue, 12 Jan 2021 12:00:00 +0700</pubDate>
+      
+      <guid>https://aesilevich.github.io/posts/ref-qualifiers/</guid>
+      <description>&lt;p&gt;Сегодня похоже день каких-то удивительных открытий.
+Сейчас копался в исходниках ranges в libstdc++ и наткнулся на вот такое объявление функции-члена в классе: &lt;code&gt;void foo() &amp;amp;&amp;amp;&lt;/code&gt;.
+Оказывается, что в C++11 были введены по аналогии с квалификаторами const и volatile квалификаторы rvalue и lvalue references
+на функции-члены.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Определение тела friend функции внутри класса</title>
+      <link>https://aesilevich.github.io/posts/inline-friend-function/</link>
+      <pubDate>Tue, 12 Jan 2021 12:00:00 +0700</pubDate>
+      
+      <guid>https://aesilevich.github.io/posts/inline-friend-function/</guid>
+      <description>&lt;p&gt;Век живи - век учись. Сейчас внезапно для себя обнаружил, что в C++ тело
+friend-функции можно определять прямо внутри класса:
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#2b91af&#34;&gt;cls&lt;/span&gt; {
+    &lt;span style=&#34;color:#00f&#34;&gt;friend&lt;/span&gt; &lt;span style=&#34;color:#2b91af&#34;&gt;void&lt;/span&gt; foo(cls &amp;amp; c) {
+    }
+};
+
+&lt;span style=&#34;color:#008000&#34;&gt;// ...
+&lt;/span&gt;&lt;span style=&#34;color:#008000&#34;&gt;&lt;/span&gt;
+cls c;
+foo(c);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>User-defined сlass template argument deduction guides в C&#43;&#43;17</title>

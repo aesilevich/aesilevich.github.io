@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Ref-qualifiers &middot; Esil Blog</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Esil Blog" />
+	</head>
+
+    <body>
+        		<nav class="nav">
+			<div class="nav-container">
+				<a href="/">
+					<h2 class="nav-title">Esil Blog</h2>
+				</a>
+				<ul>
+    
+    
+</ul>
+			</div>
+		</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        
+        <br>
+        <span>on&nbsp;</span><time datetime="2021-01-12 12:00:00 &#43;0700 &#43;07">January 12, 2021</time>
+</div>
+		<h1 class="post-title">Ref-qualifiers</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>Сегодня похоже день каких-то удивительных открытий.
+Сейчас копался в исходниках ranges в libstdc++ и наткнулся на вот такое объявление функции-члена в классе: <code>void foo() &amp;&amp;</code>.
+Оказывается, что в C++11 были введены по аналогии с квалификаторами const и volatile квалификаторы rvalue и lvalue references
+на функции-члены.</p>
+<p>Теперь допускается использовать такие квалификаторы для нестатических функций-членов:
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#008000">// старые
+</span><span style="color:#008000"></span><span style="color:#2b91af">void</span> foo();
+<span style="color:#2b91af">void</span> foo() <span style="color:#00f">const</span>;
+
+<span style="color:#008000">// новые
+</span><span style="color:#008000"></span><span style="color:#2b91af">void</span> foo() &amp;;
+<span style="color:#2b91af">void</span> foo() &amp;&amp;;
+<span style="color:#2b91af">void</span> foo() <span style="color:#00f">const</span> &amp;;
+<span style="color:#2b91af">void</span> foo() <span style="color:#00f">const</span> &amp;&amp;;
+</code></pre></div></p>
+<p>При этом нельзя смешивать новые и старые квалификаторы, будет ошибка компиляции.</p>
+<p>Вот ссылка на хорошую статью, в которой описывается зачем они были введены и как работают. Судя по всему, там вообще весь
+блог довольно интересен:</p>
+<p><a href="https://akrzemi1.wordpress.com/2014/06/02/ref-qualifiers/">https://akrzemi1.wordpress.com/2014/06/02/ref-qualifiers/</a></p>
+
+		<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "aesilevich-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/inline-friend-function/" class="left arrow">&#8592;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        		<footer>
+			<span>
+			&copy; <time datetime="2021-01-17 16:43:49.659875681 &#43;0700 &#43;07 m=&#43;0.376339782">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			</span>
+		</footer>
+
+    </body>
+</html>
