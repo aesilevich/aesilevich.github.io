@@ -5,10 +5,16 @@
     <link>https://aesilevich.github.io/tags/c&#43;&#43;/</link>
     <description>Recent content in c&#43;&#43; on Esil Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 12 Jan 2021 12:00:00 +0700</lastBuildDate>
-    
-	<atom:link href="https://aesilevich.github.io/tags/c++/index.xml" rel="self" type="application/rss+xml" />
-    
+    <lastBuildDate>Thu, 29 Dec 2022 12:00:00 +0700</lastBuildDate><atom:link href="https://aesilevich.github.io/tags/c++/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Argument-dependent lookup в C&#43;&#43;</title>
+      <link>https://aesilevich.github.io/posts/2022-12-29-adl/</link>
+      <pubDate>Thu, 29 Dec 2022 12:00:00 +0700</pubDate>
+      
+      <guid>https://aesilevich.github.io/posts/2022-12-29-adl/</guid>
+      <description>Как-то со всеми этими новыми модными штучками типа концептов и constexpr стали забываться базовые вещи из C++ и вся та жесть, которая может быть с ними связана. Вот сейчас нарвался на баг, связанный с со старым добрым Argument-dependent lookup, и задумался о том, а как вообще писать безопасный с точки зрения ADL код в библиотеках.
+Допустим вы реализуете какую-то библиотеку lib1, в которой содержатся шаблонные функции для работы с произвольными определёнными пользователем типами данных.</description>
+    </item>
     
     <item>
       <title>Ref-qualifiers</title>

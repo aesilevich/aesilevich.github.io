@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		
+		
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Argument-dependent lookup в C&#43;&#43; &middot; Esil Blog</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Esil Blog" />
+	</head>
+
+    <body>
+        		<nav class="nav">
+			<div class="nav-container">
+				<a href="/">
+					<h2 class="nav-title">Esil Blog</h2>
+				</a>
+				<ul>
+    
+    
+</ul>
+			</div>
+		</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+        <time datetime="2022-12-29 12:00:00 &#43;0700 &#43;0700">December 29, 2022</time>
+</div>
+
+		<h1 class="post-title">Argument-dependent lookup в C&#43;&#43;</h1>
+
+		
+
+		<p>Как-то со всеми этими новыми модными штучками типа концептов и <code>constexpr</code>
+стали забываться базовые вещи из C++ и вся та жесть, которая может быть с ними связана.
+Вот сейчас нарвался на баг, связанный с со старым добрым Argument-dependent lookup,
+и задумался о том, а как вообще писать безопасный с точки зрения ADL код в библиотеках.</p>
+<p>Допустим вы реализуете какую-то библиотеку <code>lib1</code>, в которой содержатся шаблонные функции
+для работы с произвольными определёнными пользователем типами данных. Среди них в реализации
+есть какая-нибудь мелкая функция, например <code>calc_size</code>:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">namespace</span> lib1 {
+    <span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> T&gt;
+    <span style="color:#2b91af">int</span> calc_size(<span style="color:#00f">const</span> T &amp; v) {
+        <span style="color:#008000">// calculating and returning size using methods of v
+</span><span style="color:#008000"></span>    }
+
+    <span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> T&gt;
+    <span style="color:#2b91af">void</span> my_public_func(<span style="color:#00f">const</span> T &amp; v) {
+        <span style="color:#008000">// ...
+</span><span style="color:#008000"></span>        <span style="color:#2b91af">int</span> sz = calc_size(v);
+        <span style="color:#008000">// ...
+</span><span style="color:#008000"></span>    }
+}
+</code></pre></div>
+<p>Казалось бы, всё находится в отдельном пространстве имен <code>lib1</code>, и никаких проблем быть не должно.
+Но не тут то было. Теперь представим, что у вас есть библиотека <code>lib2</code>, в которой определён
+класс <code>cls</code>, и в заголовочном файле в реализации библиотеки есть вспомогательная функция с тем же
+самым именем:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">namespace</span> lib2 {
+    <span style="color:#00f">class</span> <span style="color:#2b91af">cls</span> {
+        <span style="color:#008000">// ...
+</span><span style="color:#008000"></span>    };
+
+    <span style="color:#00f">inline</span> <span style="color:#2b91af">int</span> calc_size(<span style="color:#00f">const</span> cls &amp; v) {
+        <span style="color:#008000">// ...
+</span><span style="color:#008000"></span>    }
+}
+</code></pre></div>
+<p>Теперь если передать в функцию <code>lib1::my_public_func</code> параметр типа <code>cls</code>, то вызовется
+не <code>lib1::calc_size</code>, а <code>lib2::calc_size</code>. Всё, можно идти и отлаживать баг часами. Повезёт, если
+функция <code>lib2::calc_size</code> будет тоже шаблонной, тогда компилятор выдаст ошибку о том, что
+вызов <code>calc_size</code> неоднозначен.</p>
+<p>Проблема решается отправкой всех вспомогательных функций в отдельное вложенное пространство имён.
+К тому же это прячет все детали реализации так, что у пользователя не будет желания вызывать такие
+функции напрямую:
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">namespace</span> lib2 {
+    <span style="color:#00f">class</span> <span style="color:#2b91af">cls</span>;
+
+    <span style="color:#00f">namespace</span> impl {
+        <span style="color:#008000">// этот calc_size больше не будет использоваться в ADL для класса cls.
+</span><span style="color:#008000"></span>        <span style="color:#00f">inline</span> <span style="color:#2b91af">int</span> calc_size(<span style="color:#00f">const</span> cls &amp; v) {
+            <span style="color:#008000">// ...
+</span><span style="color:#008000"></span>        }
+    }
+}
+</code></pre></div></p>
+<p>А что делать, если функция <code>calc_size</code> должна быть доступна для пользователей библиотеки <code>lib2</code>?
+Можно использовать директиву <code>using namespace impl;</code> внутри пространства имён <code>lib2</code>, или вместо
+этого использовать безымянное пространство имён.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">namespace</span> lib2 {
+    <span style="color:#00f">namespace</span> 
+    <span style="color:#00f">class</span> <span style="color:#2b91af">cls</span>;
+
+    <span style="color:#00f">namespace</span> {
+        <span style="color:#008000">// calc_size не будет использоваться в ADL для класса cls
+</span><span style="color:#008000"></span>        <span style="color:#00f">inline</span> <span style="color:#2b91af">int</span> calc_size(<span style="color:#00f">const</span> cls &amp; v) {
+            <span style="color:#008000">// ...
+</span><span style="color:#008000"></span>        }
+    }
+
+    <span style="color:#00f">namespace</span> {
+        <span style="color:#2b91af">void</span> some_other_func(<span style="color:#00f">const</span> cls &amp; v) {
+            calc_size(v);       <span style="color:#008000">// OK
+</span><span style="color:#008000"></span>        }
+    }
+}
+
+cls c;
+::lib2::calc_size(c);           <span style="color:#008000">// OK
+</span></code></pre></div>
+<p>Вообще получается, что безымянное пространство имён
+оставляет функции доступными в родительском пространстве имён, но отключает для этих для функций ADL.
+Поэтому по-хорошему все публичные функции библиотеки должны находиться в безымянном пространстве имён,
+если тольно не предполагается, что они будут использоваться в ADL:</p>
+
+
+		<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "aesilevich-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/ref-qualifiers/" class="left arrow">&#8592;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        		<footer>
+			
+            <figure class="article-discussion">
+              <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "aesilevich-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+            </figure>
+			
+			<span>
+			&copy; <time datetime="2022-12-30 00:53:28.864610423 &#43;0000 WET m=&#43;0.032105196">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			</span>
+		</footer>
+
+    </body>
+</html>
