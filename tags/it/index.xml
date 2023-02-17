@@ -5,7 +5,17 @@
     <link>https://aesilevich.github.io/tags/it/</link>
     <description>Recent content in it on Esil Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 29 Dec 2022 12:00:00 +0700</lastBuildDate><atom:link href="https://aesilevich.github.io/tags/it/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 17 Feb 2023 18:00:00 +0000</lastBuildDate><atom:link href="https://aesilevich.github.io/tags/it/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Агоритмы с довесками в compile-time</title>
+      <link>https://aesilevich.github.io/posts/2023-02-17-region-constexpr/</link>
+      <pubDate>Fri, 17 Feb 2023 18:00:00 +0000</pubDate>
+      
+      <guid>https://aesilevich.github.io/posts/2023-02-17-region-constexpr/</guid>
+      <description>Сейчас делал простой класс для кэширования кусков больших данных, полученных из какого-нибудь абстрактного источника данных большого размера. Класс хранит в себе std::map, отображающий смещения в источнике данных в куски закэшированных данных.
+Хочется, чтобы в классе была функция, которая по смещению и размеру возвращает вектор из регионов, в каждом из которых указан размер и кусок данных, если в этом регионе данные загружены. Что-нибудь типа такого (эффективность из-за копий данных пока оставим в стороне):</description>
+    </item>
+    
     <item>
       <title>Argument-dependent lookup в C&#43;&#43;</title>
       <link>https://aesilevich.github.io/posts/2022-12-29-adl/</link>
