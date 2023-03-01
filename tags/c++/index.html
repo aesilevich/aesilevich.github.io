@@ -39,6 +39,20 @@
     <h1>Tag c&#43;&#43;</h1>
 	<div class="catalogue">
 		
+			<a href="https://aesilevich.github.io/posts/2023-03-01-setters/" class="catalogue-item">
+    <div>
+        <time datetime="2023-03-01 05:00:00 &#43;0000 UTC" class="catalogue-time">March 1, 2023</time>
+        <h1 class="catalogue-title">Правильные setters на современном C&#43;&#43;</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+            В старом добром C++03 были довольно простые правила передачи параметров в функции, поэтому никаких вопросов с написанием сеттеров не возникало. Все объекты должны передаваться по константной ссылке, чтобы избежать лишнего копирования, и этот же подход надо было использовать и в сеттерах. Например, типичный сеттер для std::string выглядел вот так:
+class my_class { public: void set_name(const std::string &amp; n) { name_ = n; } private: std::string name_; }; Вообще говоря, этот код и раньше вызывал некоторые вопросы.
+        </p>
+    </div>
+</a>
+
+		
 			<a href="https://aesilevich.github.io/posts/2023-02-17-region-constexpr/" class="catalogue-item">
     <div>
         <time datetime="2023-02-17 18:00:00 &#43;0000 UTC" class="catalogue-time">February 17, 2023</time>
@@ -151,7 +165,7 @@ foo(c);
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2023-02-17 21:35:22.778150103 &#43;0000 WET m=&#43;0.040649557">2023</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2023-03-01 08:59:30.633572163 &#43;0000 WET m=&#43;0.051316117">2023</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 
