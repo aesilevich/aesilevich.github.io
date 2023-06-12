@@ -5,7 +5,18 @@
     <link>https://aesilevich.github.io/</link>
     <description>Recent content on Esil Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 01 Mar 2023 05:00:00 +0000</lastBuildDate><atom:link href="https://aesilevich.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 12 Jun 2023 05:00:00 +0000</lastBuildDate><atom:link href="https://aesilevich.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Использование C&#43;&#43;20 Coroutines для генерации интервалов</title>
+      <link>https://aesilevich.github.io/posts/2023-06-12-coroutines-generator/</link>
+      <pubDate>Mon, 12 Jun 2023 05:00:00 +0000</pubDate>
+      
+      <guid>https://aesilevich.github.io/posts/2023-06-12-coroutines-generator/</guid>
+      <description>Попробовал использовать C++20 coroutines для генерации интервалов. Выглядит всё довольно неплохо. Вот небольшой пример использования.
+Пусть у нас есть класс, содержащий внутри себя вектор уникальных указателей на векторы целых чисел, и некоторые из этих указателей могут быть null. Надо вернуть из функции класса интервал, содержащий все элементы ненулевых векторов и какую-нибудь заданную последовательность (например 10 единиц) для нулевых векторов:
+class my_class { public: auto data() const { // ???  } private: std::vector&amp;lt;std::unique_ptr&amp;lt;std::vector&amp;lt;int&amp;gt;&amp;gt;&amp;gt; data_; }; С помощью одной лишь библиотеки ranges эта проблема не имеет простого решения.</description>
+    </item>
+    
     <item>
       <title>Правильные setters на современном C&#43;&#43;</title>
       <link>https://aesilevich.github.io/posts/2023-03-01-setters/</link>

@@ -39,6 +39,21 @@
     <h1>Tag c&#43;&#43;</h1>
 	<div class="catalogue">
 		
+			<a href="https://aesilevich.github.io/posts/2023-06-12-coroutines-generator/" class="catalogue-item">
+    <div>
+        <time datetime="2023-06-12 05:00:00 &#43;0000 UTC" class="catalogue-time">June 12, 2023</time>
+        <h1 class="catalogue-title">Использование C&#43;&#43;20 Coroutines для генерации интервалов</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+            Попробовал использовать C++20 coroutines для генерации интервалов. Выглядит всё довольно неплохо. Вот небольшой пример использования.
+Пусть у нас есть класс, содержащий внутри себя вектор уникальных указателей на векторы целых чисел, и некоторые из этих указателей могут быть null. Надо вернуть из функции класса интервал, содержащий все элементы ненулевых векторов и какую-нибудь заданную последовательность (например 10 единиц) для нулевых векторов:
+class my_class { public: auto data() const { // ???  } private: std::vector&lt;std::unique_ptr&lt;std::vector&lt;int&gt;&gt;&gt; data_; }; С помощью одной лишь библиотеки ranges эта проблема не имеет простого решения.
+        </p>
+    </div>
+</a>
+
+		
 			<a href="https://aesilevich.github.io/posts/2023-03-01-setters/" class="catalogue-item">
     <div>
         <time datetime="2023-03-01 05:00:00 &#43;0000 UTC" class="catalogue-time">March 1, 2023</time>
@@ -165,7 +180,7 @@ foo(c);
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2023-03-01 09:20:55.743283005 &#43;0000 WET m=&#43;0.039000297">2023</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2023-06-12 23:02:33.753271916 &#43;0100 WEST m=&#43;0.043911003">2023</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 
