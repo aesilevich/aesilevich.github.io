@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		
+		
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Deducting this в C&#43;&#43;23 &middot; Esil Blog</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Esil Blog" />
+	</head>
+
+    <body>
+        		<nav class="nav">
+			<div class="nav-container">
+				<a href="/">
+					<h2 class="nav-title">Esil Blog</h2>
+				</a>
+				<ul>
+    
+    
+</ul>
+			</div>
+		</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+        <time datetime="2023-07-25 15:00:00 &#43;0000 UTC">July 25, 2023</time>
+</div>
+
+		<h1 class="post-title">Deducting this в C&#43;&#43;23</h1>
+
+		
+
+		<p>В C++23 завезут Deducting this. Если коротко, то это возможность указать this как явный параметр метода класса, при этом тип этого параметра может быть шаблоном.</p>
+<p>Основное применение Deducting this - это устранение дублирующегося кода для одинаковых методов с разными cv-qualifiers (const/volatile) и ref-qualifiers (&amp;, &amp;&amp;).</p>
+<p>Например у нас есть следующий код на C++ 20, который идиоматически правильно определяет все варианты доступа к одной из своих переменных:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">class</span> <span style="color:#2b91af">my_class</span> {
+<span style="color:#00f">public</span>:
+    <span style="color:#2b91af">int</span> &amp; data() &amp; { <span style="color:#00f">return</span> data_; }
+    <span style="color:#00f">const</span> <span style="color:#2b91af">int</span> &amp; data() <span style="color:#00f">const</span> &amp; { <span style="color:#00f">return</span> data_; }
+    <span style="color:#2b91af">int</span> &amp;&amp; data() &amp;&amp; { <span style="color:#00f">return</span> std::move(data_); }
+<span style="color:#00f">private</span>:
+    <span style="color:#2b91af">int</span> data_;
+};
+</code></pre></div><p>С помощью Deducting this мы сможем заменить три одинаковых варианта функции <code>data</code> одним:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">class</span> <span style="color:#2b91af">my_class</span> {
+<span style="color:#00f">public</span>:
+    <span style="color:#00f">auto</span> &amp;&amp; data(<span style="color:#00f">this</span> <span style="color:#00f">auto</span> &amp;&amp; self) {
+        <span style="color:#00f">return</span> std::forward&lt;<span style="color:#00f">decltype</span>(self)&gt;(self).data_;
+    }
+<span style="color:#00f">private</span>:
+    <span style="color:#2b91af">int</span> data_;
+};
+</code></pre></div><p>У Deducting this есть ещё несколько применений, но лично для себя считаю важным возможность замены громоздкого кода CTPR (Curiously Recurring Template Pattern) на Deducting this.</p>
+<p>CTPR - это способ реализации полиморфизма через наследование, аналогичный виртуальным функциям, но только времени компиляции, а не исполнения.</p>
+<p>Например, у нас есть базовый класс <code>base</code>, в котором есть метод <code>foo</code>. Мы хотим сделать так, чтобы метод <code>foo</code> вызывал метод <code>bar</code>, определённый в классах-наследниках, но без динамического диспатчинга. Т. е. мы не планируем вызывать метод <code>foo</code> у переменной типа <code>base</code> с неизвестным во время компиляции конкретным типом. Метод <code>foo</code> будет вызываться всегда только у переменной, имеющий тип класса-наследника, известный во время компиляции. Сделать это можно так:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> Derived&gt;
+<span style="color:#00f">class</span> <span style="color:#2b91af">base</span> {
+<span style="color:#00f">public</span>:
+    <span style="color:#2b91af">void</span> foo() {
+        <span style="color:#00f">static_cast</span>&lt;Derived*&gt;(<span style="color:#00f">this</span>)-&gt;bar();
+    }   
+};
+
+<span style="color:#00f">class</span> <span style="color:#2b91af">derived</span>: <span style="color:#00f">public</span> base&lt;derived&gt; {
+<span style="color:#00f">public</span>:
+    <span style="color:#2b91af">void</span> bar() {
+        <span style="color:#008000">// ...
+</span><span style="color:#008000"></span>    }
+};
+
+<span style="color:#008000">// где-то дальше в коде
+</span><span style="color:#008000"></span>derived d;
+d.foo();
+</code></pre></div><p>Такой подход используется уже десятилетиями, но выглядит довольно убого. После добавления Deducting this больше не потребуется городить шаблоны и использовать <code>static_cast</code>:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">class</span> <span style="color:#2b91af">base</span> {
+<span style="color:#00f">public</span>:
+    <span style="color:#2b91af">void</span> foo(<span style="color:#00f">this</span> <span style="color:#00f">auto</span> &amp;&amp; self) {
+        self.bar();
+    }   
+};
+
+<span style="color:#00f">class</span> <span style="color:#2b91af">derived</span> {
+<span style="color:#00f">public</span>:
+    <span style="color:#2b91af">void</span> bar() {
+        <span style="color:#008000">// ...
+</span><span style="color:#008000"></span>    }
+};
+</code></pre></div><p>У Deducting this есть ещё несколько разных применений: передача this по значению, использование в лямбдах, исправление мелких проблем при overload resolution.</p>
+<p>Ссылка на Proposal: <a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p0847r7.html">https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p0847r7.html</a></p>
+
+
+		<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "aesilevich-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/2023-06-12-coroutines-generator/" class="left arrow">&#8592;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        		<footer>
+			
+            <figure class="article-discussion">
+              <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "aesilevich-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+            </figure>
+			
+			<span>
+			&copy; <time datetime="2023-07-25 17:54:24.311202445 &#43;0100 WEST m=&#43;0.078533890">2023</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			</span>
+		</footer>
+
+    </body>
+</html>
