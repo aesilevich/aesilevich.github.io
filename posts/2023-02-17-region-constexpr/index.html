@@ -47,55 +47,55 @@
 
 		<p>Сейчас делал простой класс для кэширования кусков больших данных, полученных из какого-нибудь абстрактного источника данных большого размера. Класс хранит в себе <code>std::map</code>, отображающий смещения в источнике данных в куски закэшированных данных.</p>
 <p>Хочется, чтобы в классе была функция, которая по смещению и размеру возвращает вектор из регионов, в каждом из которых указан размер и кусок данных, если в этом регионе данные загружены. Что-нибудь типа такого (эффективность из-за копий данных пока оставим в стороне):</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">struct</span> <span style="color:#2b91af">region</span> {
-    size_t size;
-    std::vector&lt;<span style="color:#2b91af">char</span>&gt; data;
-}
-
-std::vector&lt;region&gt; read(<span style="color:#2b91af">uint64_t</span> offset, size_t size) {
-    <span style="color:#008000">// тут довольно громоздский алгоритм поиска и итерации по `std::map`
-</span><span style="color:#008000"></span>    <span style="color:#008000">// и копирования нужных кусков данных
-</span><span style="color:#008000"></span>}
-</code></pre></div><p>И, как обычно бывает в таких случаях, настает момент, когда хочется получить не данные, а просто список регионов с информацией о том, загружены ли данные в кэш. Что-то вроде этого:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">struct</span> <span style="color:#2b91af">region_info</span> {
-    size_t size;
-    <span style="color:#2b91af">bool</span> is_fetched;
-}
-
-std::vector&lt;region_info&gt; read_info(<span style="color:#2b91af">uint64_t</span> offset, size_t size);
-</code></pre></div><p>Вообще кажется это довольно распространенная задача. Есть поиск информации в какой-то большой структуре данных, который может возвращать кучу разных элементов данных, но возврат каждого такого элемента стоит времени. Сходу в голову приходит resolve различной отладочной информации по адресу в отладчике: символ, функция, модуль, строка в исходниках. Всё это обычно получается через одну и ту же функцию одним и тем же алгоритмом.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">struct</span> <span style="color:#2b91af">region</span> {
+</span></span><span style="display:flex;"><span>    size_t size;
+</span></span><span style="display:flex;"><span>    std::vector&lt;<span style="color:#2b91af">char</span>&gt; data;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>std::vector&lt;region&gt; read(<span style="color:#2b91af">uint64_t</span> offset, size_t size) {
+</span></span><span style="display:flex;"><span>    <span style="color:#008000">// тут довольно громоздский алгоритм поиска и итерации по `std::map`
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>    <span style="color:#008000">// и копирования нужных кусков данных
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>}
+</span></span></code></pre></div><p>И, как обычно бывает в таких случаях, настает момент, когда хочется получить не данные, а просто список регионов с информацией о том, загружены ли данные в кэш. Что-то вроде этого:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">struct</span> <span style="color:#2b91af">region_info</span> {
+</span></span><span style="display:flex;"><span>    size_t size;
+</span></span><span style="display:flex;"><span>    <span style="color:#2b91af">bool</span> is_fetched;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>std::vector&lt;region_info&gt; read_info(<span style="color:#2b91af">uint64_t</span> offset, size_t size);
+</span></span></code></pre></div><p>Вообще кажется это довольно распространенная задача. Есть поиск информации в какой-то большой структуре данных, который может возвращать кучу разных элементов данных, но возврат каждого такого элемента стоит времени. Сходу в голову приходит resolve различной отладочной информации по адресу в отладчике: символ, функция, модуль, строка в исходниках. Всё это обычно получается через одну и ту же функцию одним и тем же алгоритмом.</p>
 <p>Что делали обычно раньше в таких случаях? Просто делали одну функцию read, в которую параметром передавали флаг, сообщающий о том, нужно ли возвращать данные или только информацию о регионе, а в структуру <code>region</code> добавляли флаг <code>is_fetched</code>. И если данные возвращать не надо, то во всех элементах возвращаемого вектора переменные <code>data</code> возвращались пустые.</p>
 <p>Вообще говоря, это не очень хорошее решение, ведущее к потенциальным багам, но обычно мало кто заморачивался, поэтому что альтернативой этому была магия на рекурсивных шаблонах.</p>
 <p>В современном C++ можно делать правильное решение очень просто:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">template</span> &lt;<span style="color:#2b91af">bool</span> fetch_data&gt;
-<span style="color:#00f">auto</span> read_info(<span style="color:#2b91af">uint64_t</span> offset, size_t size) {
-    <span style="color:#00f">using</span> region_t = std::conditional_t&lt;fetch_data, region, region_info&gt;;
-    <span style="color:#00f">using</span> ret_type = std::vector&lt;region_t&gt;;
-
-    ret_type res;
-
-    <span style="color:#008000">// цикл прохода по элементам внутри std::map
-</span><span style="color:#008000"></span>    <span style="color:#00f">for</span> (...) {
-        region_t reg;
-
-        <span style="color:#008000">// где-то внутри цикла при добавлении очередного элемента
-</span><span style="color:#008000"></span>        <span style="color:#00f">if</span> constexpr (fetch_data) {
-            reg.data = ...;
-        }
-
-        res.push_back(reg);
-    }
-
-    <span style="color:#00f">return</span> res;
-}
-</code></pre></div><p>Никакого дублирования кода алгоритма или шаблонной магии, всё просто и понятно. Результат получается практически идеальный: невозможно словить баг, передав неверный флаг в функцию read, или попытавшись использовать переменную <code>data</code> структуры <code>region</code> там, где не предполагается, что она будет валидная.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">template</span> &lt;<span style="color:#2b91af">bool</span> fetch_data&gt;
+</span></span><span style="display:flex;"><span><span style="color:#00f">auto</span> read_info(<span style="color:#2b91af">uint64_t</span> offset, size_t size) {
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">using</span> region_t = std::conditional_t&lt;fetch_data, region, region_info&gt;;
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">using</span> ret_type = std::vector&lt;region_t&gt;;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    ret_type res;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#008000">// цикл прохода по элементам внутри std::map
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>    <span style="color:#00f">for</span> (...) {
+</span></span><span style="display:flex;"><span>        region_t reg;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#008000">// где-то внутри цикла при добавлении очередного элемента
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>        <span style="color:#00f">if</span> constexpr (fetch_data) {
+</span></span><span style="display:flex;"><span>            reg.data = ...;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        res.push_back(reg);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">return</span> res;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Никакого дублирования кода алгоритма или шаблонной магии, всё просто и понятно. Результат получается практически идеальный: невозможно словить баг, передав неверный флаг в функцию read, или попытавшись использовать переменную <code>data</code> структуры <code>region</code> там, где не предполагается, что она будет валидная.</p>
 <p>Сейчас задумался в каких ещё языках такое можно легко делать? Насколько я помню, в Haskell вроде бы должно получиться, но там и весь алгоритм будет рекурсивный, как и в старом C++. Какие ещё? Rust?</p>
 <p>P.S. Вообще говоря, если делать правильно в современном C++, то вместо возврата вектора надо возвращать range, который будет конструировать элементы типа <code>region</code> на лету, но сути это в целом не меняет, там внутри будет по сути то же самое.</p>
 
 
 		<div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     
@@ -130,7 +130,7 @@ std::vector&lt;region_info&gt; read_info(<span style="color:#2b91af">uint64_t</s
             <figure class="article-discussion">
               <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     
@@ -151,7 +151,7 @@ std::vector&lt;region_info&gt; read_info(<span style="color:#2b91af">uint64_t</s
             </figure>
 			
 			<span>
-			&copy; <time datetime="2023-07-25 17:54:24.310211208 &#43;0100 WEST m=&#43;0.077542651">2023</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2023-12-02 09:04:01.640084328 &#43;0000 WET m=&#43;0.084372406">2023</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

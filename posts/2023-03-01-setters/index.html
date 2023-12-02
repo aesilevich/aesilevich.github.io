@@ -46,106 +46,106 @@
 		
 
 		<p>В старом добром C++03 были довольно простые правила передачи параметров в функции, поэтому никаких вопросов с написанием сеттеров не возникало. Все объекты должны передаваться по константной ссылке, чтобы избежать лишнего копирования, и этот же подход надо было использовать и в сеттерах. Например, типичный сеттер для <code>std::string</code> выглядел вот так:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">class</span> <span style="color:#2b91af">my_class</span> {
-<span style="color:#00f">public</span>:
-    <span style="color:#2b91af">void</span> set_name(<span style="color:#00f">const</span> std::string &amp; n) {
-        name_ = n;
-    }
-
-<span style="color:#00f">private</span>:
-    std::string name_;
-};
-</code></pre></div><p>Вообще говоря, этот код и раньше вызывал некоторые вопросы. Вызов <code>set_name(&quot;foo&quot;)</code> со строковым литералом в качестве параметра создает временный объект <code>std::string</code>, а потом этот объект копируется. Поэтому правильно было бы иметь ещё и второй сеттер, принимающий в качестве параметра строковой литерал. Но обычно делали только один сеттер, ну и как бы проблема касалась вроде бы только <code>std::string</code> (на самом деле нет), поэтому никто особо не заморачивался.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">class</span> <span style="color:#2b91af">my_class</span> {
+</span></span><span style="display:flex;"><span><span style="color:#00f">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#2b91af">void</span> set_name(<span style="color:#00f">const</span> std::string &amp; n) {
+</span></span><span style="display:flex;"><span>        name_ = n;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00f">private</span>:
+</span></span><span style="display:flex;"><span>    std::string name_;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>Вообще говоря, этот код и раньше вызывал некоторые вопросы. Вызов <code>set_name(&quot;foo&quot;)</code> со строковым литералом в качестве параметра создает временный объект <code>std::string</code>, а потом этот объект копируется. Поэтому правильно было бы иметь ещё и второй сеттер, принимающий в качестве параметра строковой литерал. Но обычно делали только один сеттер, ну и как бы проблема касалась вроде бы только <code>std::string</code> (на самом деле нет), поэтому никто особо не заморачивался.</p>
 <p>С появлением C++11 всё сильно изменилось. У нас появилась move semantics и r-value ссылки, и это надо было учитывать. Теперь помимо двух упомянутых ранее сеттеров правильно было бы иметь ещё и третий, принимающий в качестве параметра r-value ссылку:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">class</span> <span style="color:#2b91af">my_class</span> {
-<span style="color:#00f">public</span>:
-    <span style="color:#2b91af">void</span> set_name(<span style="color:#00f">const</span> std::string &amp; n) {
-        name_ = n;
-    }
-
-    <span style="color:#2b91af">void</span> set_name(<span style="color:#00f">const</span> <span style="color:#2b91af">char</span> * n) {
-        name_ = n;
-    }
-
-    <span style="color:#2b91af">void</span> set_name(std::string &amp;&amp; n) {
-        name_ = std::move(n);
-    }
-
-<span style="color:#00f">private</span>:
-    std::string name_;
-};
-</code></pre></div><p>В C++17 добрые люди добавили <code>std::string_view</code>, поэтому теперь требуется уже четыре версии сеттера, но это частная проблема со строками. А проблема с r-value ссылками касается вообще всех классов, а не только <code>std::string</code>. Тем более, что проблема разрастается в более сложных случаях, когда один сеттер используется для сохранения нескольких значений, и количество вариантов растет экспоненциально.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">class</span> <span style="color:#2b91af">my_class</span> {
+</span></span><span style="display:flex;"><span><span style="color:#00f">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#2b91af">void</span> set_name(<span style="color:#00f">const</span> std::string &amp; n) {
+</span></span><span style="display:flex;"><span>        name_ = n;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2b91af">void</span> set_name(<span style="color:#00f">const</span> <span style="color:#2b91af">char</span> * n) {
+</span></span><span style="display:flex;"><span>        name_ = n;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2b91af">void</span> set_name(std::string &amp;&amp; n) {
+</span></span><span style="display:flex;"><span>        name_ = std::move(n);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00f">private</span>:
+</span></span><span style="display:flex;"><span>    std::string name_;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>В C++17 добрые люди добавили <code>std::string_view</code>, поэтому теперь требуется уже четыре версии сеттера, но это частная проблема со строками. А проблема с r-value ссылками касается вообще всех классов, а не только <code>std::string</code>. Тем более, что проблема разрастается в более сложных случаях, когда один сеттер используется для сохранения нескольких значений, и количество вариантов растет экспоненциально.</p>
 <p>Помню в какой-то книге по C++14 (вроде бы это была книга от Herb Satter) предлагалось в качестве альтернативного легкого варианта передавать параметр по значению, а потом этот параметр перемещать в нужное место:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#2b91af">void</span> set_name(std::string n) {
-    name_ = std::move(n);
-}
-</code></pre></div><p>Такой вариант не является самым правильным с точки зрения эффективности, потому что будет создаваться временный объект <code>std::string</code>, но по крайней мере во всех случаях не будет дополнительного копирования.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#2b91af">void</span> set_name(std::string n) {
+</span></span><span style="display:flex;"><span>    name_ = std::move(n);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Такой вариант не является самым правильным с точки зрения эффективности, потому что будет создаваться временный объект <code>std::string</code>, но по крайней мере во всех случаях не будет дополнительного копирования.</p>
 <p>Но с последним вариантом есть одна существенная проблема. Он работает без копирований только в том случае, если для типа реализован перемещающий конструктор. В противном случае будет дополнительное копирование вообще всегда, и гораздо лучше бы было передать параметр старым добрым образом через константную ссылку.</p>
 <p>Мы точно знаем, что для <code>std::string</code> реализован правильный перемещающий конструктор, но что если надо сделать сеттер для произвольного пользовательского типа <code>foo</code>? Каждый раз ходить и смотреть есть ли в нём правильный перемещающий конструктор? Ну и сразу же возникает вопрос что делать в обобщенном коде, работающим с произвольными типами.</p>
 <p>В общем примерно понятно, что проблема решается с использованием шаблонов и универсальных ссылок. Вроде бы идея использовать шаблоны для каждого сеттера - это полный ад, но допустим, что мы хотим написать идеальный сеттер без дублирования кода. Первый вариант с использованием шаблонов на C++11 будет выглядеть так:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> Name&gt;
-<span style="color:#2b91af">void</span> set_name(Name &amp;&amp; n) {
-    name_ = std::forward&lt;Name&gt;(n);
-}
-</code></pre></div><p>Этот вариант идеален с точки зрения эффективности, но в целом довольно печальный, потому что теперь в <code>set_name</code> можно передать вообще всё что угодно, и если туда передать что-то неправильное, то компилятор выдаст длинную простыню с сообщением об ошибке с указанием места внутри <code>set_name</code>, и пользователю придется &ldquo;разматывать&rdquo; это сообщение, чтобы найти место с ошибкой в своем коде.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> Name&gt;
+</span></span><span style="display:flex;"><span><span style="color:#2b91af">void</span> set_name(Name &amp;&amp; n) {
+</span></span><span style="display:flex;"><span>    name_ = std::forward&lt;Name&gt;(n);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Этот вариант идеален с точки зрения эффективности, но в целом довольно печальный, потому что теперь в <code>set_name</code> можно передать вообще всё что угодно, и если туда передать что-то неправильное, то компилятор выдаст длинную простыню с сообщением об ошибке с указанием места внутри <code>set_name</code>, и пользователю придется &ldquo;разматывать&rdquo; это сообщение, чтобы найти место с ошибкой в своем коде.</p>
 <p>Как этот код улучшить? Ну понятно, что с помощью SFINAE и <code>enable_if</code>, который в том или ином виде существует уже лет 20, но в C++11 был добавлен в стандарт. Плюс к этому в C++11 была добавлена куча полезных type traits, среди которых есть и нужный нам <code>std::is_assignable</code>, проверяющий, что один тип можно присвоить в другой.</p>
 <p>Поэтому идиоматически правильный сеттер на C++11 будет выглядеть примерно так:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> Name&gt;
-<span style="color:#00f">typename</span> std::enable_if &lt;
-    std::is_assignable&lt;std::string, Name&gt;::value
-&gt;::type
-set_name(Name &amp;&amp; n) {
-    name_ = std::forward&lt;Name&gt;(n);
-}
-</code></pre></div><p>Что бы вы сказали, если бы вам предложили везде в качестве стандартного правила использовать такой код во всех сеттерах? Я бы отнёсся к такому предложению довольно скептично. Но это было десять лет назад во времена C++11. За прошедшие годы в C++ добавили очень много новых вещей, с помощью которых этот код можно сделать сильно лучше. Попробую показать эти изменения постепенно.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> Name&gt;
+</span></span><span style="display:flex;"><span><span style="color:#00f">typename</span> std::enable_if &lt;
+</span></span><span style="display:flex;"><span>    std::is_assignable&lt;std::string, Name&gt;::value
+</span></span><span style="display:flex;"><span>&gt;::type
+</span></span><span style="display:flex;"><span>set_name(Name &amp;&amp; n) {
+</span></span><span style="display:flex;"><span>    name_ = std::forward&lt;Name&gt;(n);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Что бы вы сказали, если бы вам предложили везде в качестве стандартного правила использовать такой код во всех сеттерах? Я бы отнёсся к такому предложению довольно скептично. Но это было десять лет назад во времена C++11. За прошедшие годы в C++ добавили очень много новых вещей, с помощью которых этот код можно сделать сильно лучше. Попробую показать эти изменения постепенно.</p>
 <p>В C++14 был добавлен вспомогательный шаблонный alias template <code>std::enable_if_t</code>, который убирает необходимость использования вложенного в <code>std::enable_if</code> типа <code>type</code> и дополнительного ключевого слова <code>typename</code>. В C++14 этот код будет выглядеть так:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> Name&gt;
-std::enable_if_t&lt;std::is_assignable&lt;std::string&amp;, Name&gt;::value&gt;
-set_name(Name &amp;&amp; n) {
-    name_ = std::forward&lt;Name&gt;(n);
-}
-</code></pre></div><p>В C++17 добавили inline variables и переменную <code>std::is_assignable_v</code>, которая убирает необходимость использования вложенного значения <code>value</code>:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> Name&gt;
-std::enable_if_t&lt;std::is_assignable_v&lt;std::string&amp;, Name&gt;&gt;
-set_name(Name &amp;&amp; n) {
-    name_ = std::forward&lt;Name&gt;(n);
-}
-</code></pre></div><p>В C++20 добавили много новых вещей, которые позволяют значительно улучшить этот код, но начнем по порядку. Во-первых, теперь есть концепты, поэтому можно использовать ключевое слово <code>requires</code> вместо мерзкого <code>std::enable_if</code>:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> Name&gt;
-<span style="color:#2b91af">void</span> set_name(Name &amp;&amp; n)
-        <span style="color:#00f">requires</span> std::is_assignable_v&lt;std::string&amp;, Name&gt; {
-    name_ = std::forward&lt;Name&gt;(n);
-}
-</code></pre></div><p>Во-вторых, можно сделать концепт <code>assignable_to</code> и использовать его прямо в объявлении шаблонного параметра:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> From, <span style="color:#00f">typename</span> To&gt;
-<span style="color:#00f">concept</span> assignable_to = std::is_assignable_v&lt;To, From&gt;;
-
-...
-
-<span style="color:#00f">template</span> &lt;assignable_to&lt;std::string&amp;&gt; Name&gt;
-<span style="color:#2b91af">void</span> set_name(Name &amp;&amp; n) {
-    name_ = std::forward&lt;Name&gt;(n);
-}
-</code></pre></div><p>В-третьих, в C++20 теперь есть возможность объявлять шаблонные функции с использованием <code>auto</code>, поэтому доступен вот такой вариант:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#2b91af">void</span> set_name(<span style="color:#00f">auto</span> &amp;&amp; n) <span style="color:#00f">requires</span> assignable_to&lt;<span style="color:#00f">decltype</span>(n), std::string&amp;&gt; {
-    name_ = std::forward&lt;<span style="color:#00f">decltype</span>(n)&gt;(n);
-}
-</code></pre></div><p>Ну и наконец, мы можем использовать концепт <code>assignable_to</code> непосредственно в объявлении параметра с типом <code>auto</code>:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#2b91af">void</span> set_name(assignable_to&lt;std::string&amp;&gt; <span style="color:#00f">auto</span> &amp;&amp; n) {
-    name_ = std::forward&lt;<span style="color:#00f">decltype</span>(n)&gt;(n);
-}
-</code></pre></div><p>Вот последний вариант уже действительно похож на то, что можно использовать при написании повседневного кода. Единственный вопрос, который тут возникает, - это отсутствие концепта <code>std::assignable_to</code> в стандартной библиотеке.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> Name&gt;
+</span></span><span style="display:flex;"><span>std::enable_if_t&lt;std::is_assignable&lt;std::string&amp;, Name&gt;::value&gt;
+</span></span><span style="display:flex;"><span>set_name(Name &amp;&amp; n) {
+</span></span><span style="display:flex;"><span>    name_ = std::forward&lt;Name&gt;(n);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>В C++17 добавили inline variables и переменную <code>std::is_assignable_v</code>, которая убирает необходимость использования вложенного значения <code>value</code>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> Name&gt;
+</span></span><span style="display:flex;"><span>std::enable_if_t&lt;std::is_assignable_v&lt;std::string&amp;, Name&gt;&gt;
+</span></span><span style="display:flex;"><span>set_name(Name &amp;&amp; n) {
+</span></span><span style="display:flex;"><span>    name_ = std::forward&lt;Name&gt;(n);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>В C++20 добавили много новых вещей, которые позволяют значительно улучшить этот код, но начнем по порядку. Во-первых, теперь есть концепты, поэтому можно использовать ключевое слово <code>requires</code> вместо мерзкого <code>std::enable_if</code>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> Name&gt;
+</span></span><span style="display:flex;"><span><span style="color:#2b91af">void</span> set_name(Name &amp;&amp; n)
+</span></span><span style="display:flex;"><span>        <span style="color:#00f">requires</span> std::is_assignable_v&lt;std::string&amp;, Name&gt; {
+</span></span><span style="display:flex;"><span>    name_ = std::forward&lt;Name&gt;(n);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Во-вторых, можно сделать концепт <code>assignable_to</code> и использовать его прямо в объявлении шаблонного параметра:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> From, <span style="color:#00f">typename</span> To&gt;
+</span></span><span style="display:flex;"><span><span style="color:#00f">concept</span> assignable_to = std::is_assignable_v&lt;To, From&gt;;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00f">template</span> &lt;assignable_to&lt;std::string&amp;&gt; Name&gt;
+</span></span><span style="display:flex;"><span><span style="color:#2b91af">void</span> set_name(Name &amp;&amp; n) {
+</span></span><span style="display:flex;"><span>    name_ = std::forward&lt;Name&gt;(n);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>В-третьих, в C++20 теперь есть возможность объявлять шаблонные функции с использованием <code>auto</code>, поэтому доступен вот такой вариант:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#2b91af">void</span> set_name(<span style="color:#00f">auto</span> &amp;&amp; n) <span style="color:#00f">requires</span> assignable_to&lt;<span style="color:#00f">decltype</span>(n), std::string&amp;&gt; {
+</span></span><span style="display:flex;"><span>    name_ = std::forward&lt;<span style="color:#00f">decltype</span>(n)&gt;(n);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Ну и наконец, мы можем использовать концепт <code>assignable_to</code> непосредственно в объявлении параметра с типом <code>auto</code>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#2b91af">void</span> set_name(assignable_to&lt;std::string&amp;&gt; <span style="color:#00f">auto</span> &amp;&amp; n) {
+</span></span><span style="display:flex;"><span>    name_ = std::forward&lt;<span style="color:#00f">decltype</span>(n)&gt;(n);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Вот последний вариант уже действительно похож на то, что можно использовать при написании повседневного кода. Единственный вопрос, который тут возникает, - это отсутствие концепта <code>std::assignable_to</code> в стандартной библиотеке.</p>
 <p>В стандартной библиотеке есть концепт <code>std::assignable_from</code>, но его не получится использовать в последнем самом коротком варианте из-за неподходящего порядка параметров. Плюс к этому с ним есть дополнительная проблема в том, что по каким-то не очень понятным причинам этот концепт проверяет наличие не только оператора присваивания, но и конструктора, принимающего нужный параметр.</p>
 <p>Ещё есть концепт <code>std::convertible_to</code>, но конверсия и присваиваемость - это не одно и то же. Хотя в большинстве случаев, в том числе и для <code>std::string</code>, это будет работать:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#2b91af">void</span> set_name(std::convertible_to&lt;std::string&gt; <span style="color:#00f">auto</span> &amp;&amp; n) {
-    name_ = std::forward&lt;<span style="color:#00f">decltype</span>(n)&gt;(n);
-}
-</code></pre></div><p>В общем думаю попробовать на постоянной основе использовать такой подход для написания сеттеров в повседневном коде. Посмотрим что из этого получится.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#2b91af">void</span> set_name(std::convertible_to&lt;std::string&gt; <span style="color:#00f">auto</span> &amp;&amp; n) {
+</span></span><span style="display:flex;"><span>    name_ = std::forward&lt;<span style="color:#00f">decltype</span>(n)&gt;(n);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>В общем думаю попробовать на постоянной основе использовать такой подход для написания сеттеров в повседневном коде. Посмотрим что из этого получится.</p>
 
 
 		<div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     
@@ -180,7 +180,7 @@ set_name(Name &amp;&amp; n) {
             <figure class="article-discussion">
               <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     
@@ -201,7 +201,7 @@ set_name(Name &amp;&amp; n) {
             </figure>
 			
 			<span>
-			&copy; <time datetime="2023-07-25 17:54:24.314225522 &#43;0100 WEST m=&#43;0.081556963">2023</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2023-12-02 09:04:01.649043575 &#43;0000 WET m=&#43;0.093331637">2023</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

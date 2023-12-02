@@ -1,94 +1,61 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  
   <url>
     <loc>https://aesilevich.github.io/tags/c&#43;&#43;/</loc>
-    <lastmod>2023-07-25T15:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2023-12-02T06:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://aesilevich.github.io/</loc>
+    <lastmod>2023-12-02T06:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://aesilevich.github.io/tags/it/</loc>
+    <lastmod>2023-12-02T06:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://aesilevich.github.io/posts/</loc>
+    <lastmod>2023-12-02T06:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://aesilevich.github.io/tags/</loc>
+    <lastmod>2023-12-02T06:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://aesilevich.github.io/posts/2023-11-29-ull/</loc>
+    <lastmod>2023-12-02T06:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://aesilevich.github.io/posts/2023-07-25-deducting-this/</loc>
     <lastmod>2023-07-25T15:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://aesilevich.github.io/</loc>
-    <lastmod>2023-07-25T15:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://aesilevich.github.io/tags/it/</loc>
-    <lastmod>2023-07-25T15:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://aesilevich.github.io/posts/</loc>
-    <lastmod>2023-07-25T15:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://aesilevich.github.io/tags/</loc>
-    <lastmod>2023-07-25T15:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://aesilevich.github.io/posts/2023-06-12-coroutines-generator/</loc>
     <lastmod>2023-06-12T05:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://aesilevich.github.io/posts/2023-03-01-setters/</loc>
     <lastmod>2023-03-01T05:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://aesilevich.github.io/posts/2023-02-17-region-constexpr/</loc>
     <lastmod>2023-02-17T18:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://aesilevich.github.io/posts/2022-12-29-adl/</loc>
     <lastmod>2022-12-29T12:00:00+07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://aesilevich.github.io/posts/ref-qualifiers/</loc>
     <lastmod>2021-01-12T12:00:00+07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://aesilevich.github.io/posts/inline-friend-function/</loc>
     <lastmod>2021-01-12T12:00:00+07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://aesilevich.github.io/posts/ctad-user-defined-guides/</loc>
     <lastmod>2020-07-29T12:00:00+07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://aesilevich.github.io/tags/gui/</loc>
     <lastmod>2018-11-05T02:14:00+07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://aesilevich.github.io/posts/gui-memory-usage/</loc>
     <lastmod>2018-11-05T02:14:00+07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://aesilevich.github.io/tags/mvc/</loc>
     <lastmod>2017-02-02T22:12:17+07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://aesilevich.github.io/posts/multiple-inheritance/</loc>
     <lastmod>2017-02-02T22:12:17+07:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://aesilevich.github.io/categories/</loc>
   </url>
-  
 </urlset>

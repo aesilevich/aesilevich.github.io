@@ -47,54 +47,54 @@
 
 		<p>Попробовал использовать C++20 coroutines для генерации интервалов. Выглядит всё довольно неплохо. Вот небольшой пример использования.</p>
 <p>Пусть у нас есть класс, содержащий внутри себя вектор уникальных указателей на векторы целых чисел, и некоторые из этих указателей могут быть <code>null</code>. Надо вернуть из функции класса интервал, содержащий все элементы ненулевых векторов и какую-нибудь заданную последовательность (например 10 единиц) для нулевых векторов:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">class</span> <span style="color:#2b91af">my_class</span> {
-<span style="color:#00f">public</span>:
-    <span style="color:#00f">auto</span> data() <span style="color:#00f">const</span> {
-        <span style="color:#008000">// ???
-</span><span style="color:#008000"></span>    }
-<span style="color:#00f">private</span>:
-    std::vector&lt;std::unique_ptr&lt;std::vector&lt;<span style="color:#2b91af">int</span>&gt;&gt;&gt; data_;
-};
-</code></pre></div><p>С помощью одной лишь библиотеки <code>ranges</code> эта проблема не имеет простого решения. У нас есть адаптер <code>std::ranges::views::join</code>, который объединяет интервал интервалов в один интервал, но проблема в том, что интервалы в объединяемой последовательности должны иметь один и тот же тип, а у нас тип выбирается во время выполнения.</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">static</span> std::array&lt;<span style="color:#2b91af">int</span>, 10&gt; once_array;
-
-<span style="color:#00f">auto</span> data() <span style="color:#00f">const</span> {
-    <span style="color:#00f">auto</span> fn = [](<span style="color:#00f">auto</span> &amp;&amp; vptr) {
-        <span style="color:#00f">if</span> (vptr) {
-            <span style="color:#008000">// return type is std::ranges::ref_view&lt;std::vector&lt;int&gt;&gt;
-</span><span style="color:#008000"></span>            <span style="color:#00f">return</span> (*vptr.get()) | std::ranges::views::all;
-        } <span style="color:#00f">else</span> {
-            <span style="color:#008000">// return type is std::ranges::ref_view&lt;std::array&lt;int, 10&gt;&gt;
-</span><span style="color:#008000"></span>            <span style="color:#00f">return</span> ones_array | std::ranges::views::all;
-        }   
-    };  
-    <span style="color:#00f">auto</span> data_ranges = data_ | std::ranges::views::transform(fn);
-    <span style="color:#00f">return</span> data_ranges | std::ranges::views::join;
-}
-</code></pre></div><p>Здесь помог бы какой-нибудь адаптер <code>std::ranges::views::conditional</code>, который во время выполнения выбирает один из двух интервалов, возвращаемых функторами, но такого адаптера нету. Поэтому придётся вручную реализовывать собственный итератор, который будет ходить по вектору указателей.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">class</span> <span style="color:#2b91af">my_class</span> {
+</span></span><span style="display:flex;"><span><span style="color:#00f">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">auto</span> data() <span style="color:#00f">const</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#008000">// ???
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>    }
+</span></span><span style="display:flex;"><span><span style="color:#00f">private</span>:
+</span></span><span style="display:flex;"><span>    std::vector&lt;std::unique_ptr&lt;std::vector&lt;<span style="color:#2b91af">int</span>&gt;&gt;&gt; data_;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>С помощью одной лишь библиотеки <code>ranges</code> эта проблема не имеет простого решения. У нас есть адаптер <code>std::ranges::views::join</code>, который объединяет интервал интервалов в один интервал, но проблема в том, что интервалы в объединяемой последовательности должны иметь один и тот же тип, а у нас тип выбирается во время выполнения.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">static</span> std::array&lt;<span style="color:#2b91af">int</span>, 10&gt; once_array;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00f">auto</span> data() <span style="color:#00f">const</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">auto</span> fn = [](<span style="color:#00f">auto</span> &amp;&amp; vptr) {
+</span></span><span style="display:flex;"><span>        <span style="color:#00f">if</span> (vptr) {
+</span></span><span style="display:flex;"><span>            <span style="color:#008000">// return type is std::ranges::ref_view&lt;std::vector&lt;int&gt;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>            <span style="color:#00f">return</span> (*vptr.get()) | std::ranges::views::all;
+</span></span><span style="display:flex;"><span>        } <span style="color:#00f">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#008000">// return type is std::ranges::ref_view&lt;std::array&lt;int, 10&gt;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>            <span style="color:#00f">return</span> ones_array | std::ranges::views::all;
+</span></span><span style="display:flex;"><span>        }   
+</span></span><span style="display:flex;"><span>    };  
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">auto</span> data_ranges = data_ | std::ranges::views::transform(fn);
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">return</span> data_ranges | std::ranges::views::join;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Здесь помог бы какой-нибудь адаптер <code>std::ranges::views::conditional</code>, который во время выполнения выбирает один из двух интервалов, возвращаемых функторами, но такого адаптера нету. Поэтому придётся вручную реализовывать собственный итератор, который будет ходить по вектору указателей.</p>
 <p>С помощью корутин эта проблема решается гораздо проще. В стандарте C++20 определены только ключевые слова для поддержки корутин и описаны концепции классов, которые эти корутины должны возвращать, но самих классов в стандартной библиотеке нету (их планируют добавить в стандарт C++23). Поэтому нужно взять одну из библиотек, имеющих классы для генерации интервалов, например ranges-v3, которая имеет шаблонный класс <code>ranges::experimental::generator</code>.</p>
 <p>Функция <code>data</code> реализуется следующим образом:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">ranges::experimental::generator&lt;<span style="color:#2b91af">int</span>&gt; data() <span style="color:#00f">const</span> {
-    <span style="color:#00f">for</span> (<span style="color:#00f">auto</span> &amp;&amp; vptr : data_) {
-        <span style="color:#00f">if</span> (vptr) {
-            <span style="color:#00f">for</span> (<span style="color:#2b91af">int</span> i : *vptr) {
-                <span style="color:#00f">co_yield</span> i;
-            }   
-        } <span style="color:#00f">else</span> {
-            <span style="color:#00f">for</span> (<span style="color:#2b91af">int</span> i = 0; i &lt; 10; ++i) {
-                <span style="color:#00f">co_yield</span> 1;
-            }   
-        }   
-    }
-}
-</code></pre></div><p>Всё просто и понятно, никаких адских последовательностей адаптеров и трансформеров, и не надо писать свой собственный итератор.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>ranges::experimental::generator&lt;<span style="color:#2b91af">int</span>&gt; data() <span style="color:#00f">const</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">for</span> (<span style="color:#00f">auto</span> &amp;&amp; vptr : data_) {
+</span></span><span style="display:flex;"><span>        <span style="color:#00f">if</span> (vptr) {
+</span></span><span style="display:flex;"><span>            <span style="color:#00f">for</span> (<span style="color:#2b91af">int</span> i : *vptr) {
+</span></span><span style="display:flex;"><span>                <span style="color:#00f">co_yield</span> i;
+</span></span><span style="display:flex;"><span>            }   
+</span></span><span style="display:flex;"><span>        } <span style="color:#00f">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#00f">for</span> (<span style="color:#2b91af">int</span> i = 0; i &lt; 10; ++i) {
+</span></span><span style="display:flex;"><span>                <span style="color:#00f">co_yield</span> 1;
+</span></span><span style="display:flex;"><span>            }   
+</span></span><span style="display:flex;"><span>        }   
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Всё просто и понятно, никаких адских последовательностей адаптеров и трансформеров, и не надо писать свой собственный итератор.</p>
 <p>С помощью корутин можно генерировать и модифицируемые последовательности. Для этого корутина должна возвращать <code>ranges::experimental::generator&lt;int &amp;&gt;</code>. Но для нашего примера это неактуально, потому что непонятно что возвращать в случае нулевого вектора.</p>
 <p>P. S. На самом деле у использования корутин для генерации интервалов есть один недостаток. Корутина всегда возвращает интервал, соответствующий концептам <code>std::ranges::input_range</code> или <code>std::ranges::output_range</code>, которые соответствуют обобщенному генератору последовательности. Интервалы C++20 гораздо мощнее и позволяют их использовать со сложными алгоритмами и генерировать более эффективный код.</p>
 
 
 		<div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     
@@ -129,7 +129,7 @@
             <figure class="article-discussion">
               <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     
@@ -150,7 +150,7 @@
             </figure>
 			
 			<span>
-			&copy; <time datetime="2023-07-25 17:54:24.312056663 &#43;0100 WEST m=&#43;0.079388107">2023</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2023-12-02 09:04:01.642887093 &#43;0000 WET m=&#43;0.087175180">2023</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

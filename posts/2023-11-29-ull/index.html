@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		
+		
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Декларативное описание UI на C&#43;&#43;20 &middot; Esil Blog</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Esil Blog" />
+	</head>
+
+    <body>
+        		<nav class="nav">
+			<div class="nav-container">
+				<a href="/">
+					<h2 class="nav-title">Esil Blog</h2>
+				</a>
+				<ul>
+    
+    
+</ul>
+			</div>
+		</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+        <time datetime="2023-12-02 06:00:00 &#43;0000 UTC">December 2, 2023</time>
+</div>
+
+		<h1 class="post-title">Декларативное описание UI на C&#43;&#43;20</h1>
+
+		
+
+		<p>Несколько лет назад у меня появилась идея как можно реализовать декларативное описание UI на современном C++. Наконец-то нашёл время и реализовал маленькую экспериментальную библиотеку.</p>
+<p>Ключевая идея заключается в том, что с помощью Class Template Argument Deduction (CTAG), добавленного в C++17, и Variadic Templates, которые существуют ещё с C++11, можно в compile time описывать сложные иерархические структуры данных с помощью фигурных скобок, без явного указания параметров шаблонов.</p>
+<p>Например, мы можем объявить класс <code>widget</code> для описания виджетов UI следующим образом:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> ... Elements&gt;
+</span></span><span style="display:flex;"><span><span style="color:#00f">class</span> <span style="color:#2b91af">widget</span> {
+</span></span><span style="display:flex;"><span><span style="color:#00f">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">explicit</span> widget(Elements &amp;&amp; ... elements) { <span style="color:#008000">/*...*/</span> }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>Теперь этот класс можно использовать с другими классами, объявленными подобным же образом, для построения дерева разметки UI:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">auto</span> w = widget {
+</span></span><span style="display:flex;"><span>    title {<span style="color:#a31515">&#34;My Widget&#34;</span>},
+</span></span><span style="display:flex;"><span>    widget {
+</span></span><span style="display:flex;"><span>        <span style="color:#008000">/* ... */</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    other_widget {
+</span></span><span style="display:flex;"><span>        <span style="color:#008000">/* ... */</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>Компилятор сам выведет параметры <code>Elements</code> шаблона <code>widget</code> для переменной <code>w</code>, в данном случае тип переменной <code>w</code> будет <code>widget&lt;title, widget&lt;...&gt;, other_widget&lt;...&gt;&gt;</code>. Имея типы дочерних элементов в виде параметров шаблона класса мы можем с помощью метапрограммирования делать много интересных вещей,
+например отделить дочерние виджеты (<code>widget</code> и <code>other_widget</code>) от свойств (<code>title</code>), сохранить их в переменную-член и организовать к ним доступ по индексу со статической типизацией:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#008000">// child1 type is widget&lt;...&gt; &amp;
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span><span style="color:#00f">auto</span> &amp; child1 = w.child&lt;0&gt;();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#008000">// child2 type os other_widget&lt;...&gt; &amp;
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span><span style="color:#00f">auto</span> &amp; child2 = w.child&lt;1&gt;();
+</span></span></code></pre></div><p>В C++20 добавили возможность использования literal class type в качестве параметров шаблона, и с помощью этого можно реализовать параметризацию шаблонных классов и функций строковым литералом. Применив всё это вместе можно реализовать поиск дочерних виджетов в разметке по строковому ID со статическиой типизацией:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">auto</span> w = widget {
+</span></span><span style="display:flex;"><span>    some_widget {
+</span></span><span style="display:flex;"><span>        id&lt;<span style="color:#a31515">&#34;my_widget&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#008000">// child type is some_widget&lt;...&gt; &amp;
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span><span style="color:#00f">auto</span> &amp; child = w.child&lt;<span style="color:#a31515">&#34;my_widget&#34;</span>&gt;();
+</span></span></code></pre></div><p>Отдельной проблемой была реализация возможности добавления обработчиков событий прямо в разметке. С помощью обобщённых лямбда-функций (из C++14) и небольших хитростей удалось реализовать возможность доступа из обработчиков к дочерним элементам разметки по ID или индексу:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">auto</span> w = root_widget {
+</span></span><span style="display:flex;"><span>    some_widget {
+</span></span><span style="display:flex;"><span>        id&lt;<span style="color:#a31515">&#34;child_widget&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    button {
+</span></span><span style="display:flex;"><span>        on_click { [](<span style="color:#00f">auto</span> &amp; root) {
+</span></span><span style="display:flex;"><span>            <span style="color:#008000">// child type is some_widget &amp;
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>            <span style="color:#00f">auto</span> &amp; child = root.<span style="color:#00f">template</span> child&lt;<span style="color:#a31515">&#34;child_widget&#34;</span>&gt;();
+</span></span><span style="display:flex;"><span>        } }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Идея заключается в том, чтобы добавить специальные типы виджетов (<code>root_widget</code>, <code>window</code>,  <code>dialog</code>, и т. д.), которые будут корнями разметки. Конструкторы этих виджетов будут устанавливать себя в качестве параметра, передаваемого в обобщенные лямбда-функции всех обработчиков событий.</p>
+<p>Если всё это сложить вместе, то реализация просто диалога с кнопкой и счётчиком выглядит примерно так:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">auto</span> dlg = ui::dialog {
+</span></span><span style="display:flex;"><span>    ui::vbox {
+</span></span><span style="display:flex;"><span>        ui::hbox {
+</span></span><span style="display:flex;"><span>            ui::label {
+</span></span><span style="display:flex;"><span>                ui::text(<span style="color:#a31515">&#34;Counter:&#34;</span>)
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            ui::line_edit {
+</span></span><span style="display:flex;"><span>                ui::id&lt;<span style="color:#a31515">&#34;counter&#34;</span>&gt;,
+</span></span><span style="display:flex;"><span>                ui::text(<span style="color:#a31515">&#34;0&#34;</span>)
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        ui::button {
+</span></span><span style="display:flex;"><span>            ui::text(<span style="color:#a31515">&#34;Button&#34;</span>),
+</span></span><span style="display:flex;"><span>            ui::on_click { [](<span style="color:#00f">auto</span> &amp; root) {
+</span></span><span style="display:flex;"><span>                <span style="color:#00f">auto</span> &amp; edit = root.<span style="color:#00f">template</span> child&lt;<span style="color:#a31515">&#34;counter&#34;</span>&gt;();
+</span></span><span style="display:flex;"><span>                edit.set_text(std::to_wstring(std::stoi(edit.text()) + 1));
+</span></span><span style="display:flex;"><span>            } }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>Реализация библиотеки для Qt с примером использования лежит здесь: <a href="https://github.com/cxx-ui/ull">https://github.com/cxx-ui/ull</a>.</p>
+<p>Это пока только экспериментальная версия, proof of concept. Осталось понять что с этим делать дальше. Я склоняюсь к тому, что не стоит пытаться делать отдельную новую библиотеку для UI на C++, а сделать это для начала в виде вспомогательной библиотеки, которую можно будет использовать в любом существующем коде UI, написанном с помощью разных библиотек: Qt, wxWidgets, Gtk.</p>
+
+
+		<div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "aesilevich-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+	</div>
+
+	<div class="pagination">
+		<a href="/posts/2023-07-25-deducting-this/" class="left arrow">&#8592;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        		<footer>
+			
+            <figure class="article-discussion">
+              <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "aesilevich-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+            </figure>
+			
+			<span>
+			&copy; <time datetime="2023-12-02 09:04:01.644335654 &#43;0000 WET m=&#43;0.088623722">2023</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			</span>
+		</footer>
+
+    </body>
+</html>

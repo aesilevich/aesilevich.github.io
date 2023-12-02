@@ -47,68 +47,68 @@
 
 		<p>Как-то со всеми этими новыми модными штучками типа концептов и <code>constexpr</code> стали забываться базовые вещи из C++ и вся та жесть, которая может быть с ними связана. Вот сейчас нарвался на баг, связанный с со старым добрым Argument-dependent lookup, и задумался о том, а как вообще писать безопасный с точки зрения ADL код в библиотеках.</p>
 <p>Допустим вы реализуете какую-то библиотеку <code>lib1</code>, в которой содержатся шаблонные функции для работы с произвольными определёнными пользователем типами данных. Среди них в реализации есть какая-нибудь мелкая функция, например <code>calc_size</code>:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">namespace</span> lib1 {
-    <span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> T&gt;
-    <span style="color:#2b91af">int</span> calc_size(<span style="color:#00f">const</span> T &amp; v) {
-        <span style="color:#008000">// calculating and returning size using methods of v
-</span><span style="color:#008000"></span>    }
-
-    <span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> T&gt;
-    <span style="color:#2b91af">void</span> my_public_func(<span style="color:#00f">const</span> T &amp; v) {
-        <span style="color:#008000">// ...
-</span><span style="color:#008000"></span>        <span style="color:#2b91af">int</span> sz = calc_size(v);
-        <span style="color:#008000">// ...
-</span><span style="color:#008000"></span>    }
-}
-</code></pre></div><p>Казалось бы, всё находится в отдельном пространстве имен <code>lib1</code>, и никаких проблем быть не должно. Но не тут то было. Теперь представим, что у вас есть библиотека <code>lib2</code>, в которой определён класс <code>cls</code>, и в заголовочном файле в реализации библиотеки есть вспомогательная функция с тем же самым именем:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">namespace</span> lib2 {
-    <span style="color:#00f">class</span> <span style="color:#2b91af">cls</span> {
-        <span style="color:#008000">// ...
-</span><span style="color:#008000"></span>    };
-
-    <span style="color:#00f">inline</span> <span style="color:#2b91af">int</span> calc_size(<span style="color:#00f">const</span> cls &amp; v) {
-        <span style="color:#008000">// ...
-</span><span style="color:#008000"></span>    }
-}
-</code></pre></div><p>Теперь если передать в функцию <code>lib1::my_public_func</code> параметр типа <code>cls</code>, то вызовется не <code>lib1::calc_size</code>, а <code>lib2::calc_size</code>. Всё, можно идти и отлаживать баг часами. Повезёт, если функция <code>lib2::calc_size</code> будет тоже шаблонной, тогда компилятор выдаст ошибку о том, что вызов <code>calc_size</code> неоднозначен.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">namespace</span> lib1 {
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> T&gt;
+</span></span><span style="display:flex;"><span>    <span style="color:#2b91af">int</span> calc_size(<span style="color:#00f">const</span> T &amp; v) {
+</span></span><span style="display:flex;"><span>        <span style="color:#008000">// calculating and returning size using methods of v
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">template</span> &lt;<span style="color:#00f">typename</span> T&gt;
+</span></span><span style="display:flex;"><span>    <span style="color:#2b91af">void</span> my_public_func(<span style="color:#00f">const</span> T &amp; v) {
+</span></span><span style="display:flex;"><span>        <span style="color:#008000">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>        <span style="color:#2b91af">int</span> sz = calc_size(v);
+</span></span><span style="display:flex;"><span>        <span style="color:#008000">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Казалось бы, всё находится в отдельном пространстве имен <code>lib1</code>, и никаких проблем быть не должно. Но не тут то было. Теперь представим, что у вас есть библиотека <code>lib2</code>, в которой определён класс <code>cls</code>, и в заголовочном файле в реализации библиотеки есть вспомогательная функция с тем же самым именем:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">namespace</span> lib2 {
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">class</span> <span style="color:#2b91af">cls</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#008000">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">inline</span> <span style="color:#2b91af">int</span> calc_size(<span style="color:#00f">const</span> cls &amp; v) {
+</span></span><span style="display:flex;"><span>        <span style="color:#008000">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Теперь если передать в функцию <code>lib1::my_public_func</code> параметр типа <code>cls</code>, то вызовется не <code>lib1::calc_size</code>, а <code>lib2::calc_size</code>. Всё, можно идти и отлаживать баг часами. Повезёт, если функция <code>lib2::calc_size</code> будет тоже шаблонной, тогда компилятор выдаст ошибку о том, что вызов <code>calc_size</code> неоднозначен.</p>
 <p>Проблема решается отправкой всех вспомогательных функций в отдельное вложенное пространство имён. К тому же это прячет все детали реализации так, что у пользователя не будет желания вызывать такиефункции напрямую:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">namespace</span> lib2 {
-    <span style="color:#00f">class</span> <span style="color:#2b91af">cls</span>;
-
-    <span style="color:#00f">namespace</span> impl {
-        <span style="color:#008000">// этот calc_size больше не будет использоваться в ADL для класса cls.
-</span><span style="color:#008000"></span>        <span style="color:#00f">inline</span> <span style="color:#2b91af">int</span> calc_size(<span style="color:#00f">const</span> cls &amp; v) {
-            <span style="color:#008000">// ...
-</span><span style="color:#008000"></span>        }
-    }
-}
-</code></pre></div><p>А что делать, если функция <code>calc_size</code> должна быть доступна для пользователей библиотеки <code>lib2</code>? Можно использовать директиву <code>using namespace impl;</code> внутри пространства имён <code>lib2</code>, или вместо этого использовать безымянное пространство имён.</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00f">namespace</span> lib2 {
-    <span style="color:#00f">namespace</span> 
-    <span style="color:#00f">class</span> <span style="color:#2b91af">cls</span>;
-
-    <span style="color:#00f">namespace</span> {
-        <span style="color:#008000">// calc_size не будет использоваться в ADL для класса cls
-</span><span style="color:#008000"></span>        <span style="color:#00f">inline</span> <span style="color:#2b91af">int</span> calc_size(<span style="color:#00f">const</span> cls &amp; v) {
-            <span style="color:#008000">// ...
-</span><span style="color:#008000"></span>        }
-    }
-
-    <span style="color:#00f">namespace</span> {
-        <span style="color:#2b91af">void</span> some_other_func(<span style="color:#00f">const</span> cls &amp; v) {
-            calc_size(v);       <span style="color:#008000">// OK
-</span><span style="color:#008000"></span>        }
-    }
-}
-
-cls c;
-::lib2::calc_size(c);           <span style="color:#008000">// OK
-</span></code></pre></div><p>Вообще получается, что безымянное пространство имён  оставляет функции доступными в родительском пространстве имён, но отключает для этих для функций ADL. Поэтому по-хорошему все публичные функции библиотеки должны находиться в безымянном пространстве имён, если тольно не предполагается, что они будут использоваться в ADL.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">namespace</span> lib2 {
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">class</span> <span style="color:#2b91af">cls</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">namespace</span> impl {
+</span></span><span style="display:flex;"><span>        <span style="color:#008000">// этот calc_size больше не будет использоваться в ADL для класса cls.
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>        <span style="color:#00f">inline</span> <span style="color:#2b91af">int</span> calc_size(<span style="color:#00f">const</span> cls &amp; v) {
+</span></span><span style="display:flex;"><span>            <span style="color:#008000">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>А что делать, если функция <code>calc_size</code> должна быть доступна для пользователей библиотеки <code>lib2</code>? Можно использовать директиву <code>using namespace impl;</code> внутри пространства имён <code>lib2</code>, или вместо этого использовать безымянное пространство имён.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00f">namespace</span> lib2 {
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">namespace</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">class</span> <span style="color:#2b91af">cls</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">namespace</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#008000">// calc_size не будет использоваться в ADL для класса cls
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>        <span style="color:#00f">inline</span> <span style="color:#2b91af">int</span> calc_size(<span style="color:#00f">const</span> cls &amp; v) {
+</span></span><span style="display:flex;"><span>            <span style="color:#008000">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00f">namespace</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#2b91af">void</span> some_other_func(<span style="color:#00f">const</span> cls &amp; v) {
+</span></span><span style="display:flex;"><span>            calc_size(v);       <span style="color:#008000">// OK
+</span></span></span><span style="display:flex;"><span><span style="color:#008000"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>cls c;
+</span></span><span style="display:flex;"><span>::lib2::calc_size(c);           <span style="color:#008000">// OK
+</span></span></span></code></pre></div><p>Вообще получается, что безымянное пространство имён  оставляет функции доступными в родительском пространстве имён, но отключает для этих для функций ADL. Поэтому по-хорошему все публичные функции библиотеки должны находиться в безымянном пространстве имён, если тольно не предполагается, что они будут использоваться в ADL.</p>
 
 
 		<div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     
@@ -143,7 +143,7 @@ cls c;
             <figure class="article-discussion">
               <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     
@@ -164,7 +164,7 @@ cls c;
             </figure>
 			
 			<span>
-			&copy; <time datetime="2023-07-25 17:54:24.311559541 &#43;0100 WEST m=&#43;0.078890995">2023</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2023-12-02 09:04:01.641770401 &#43;0000 WET m=&#43;0.086058480">2023</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 
