@@ -5,7 +5,18 @@
     <link>https://aesilevich.github.io/posts/</link>
     <description>Recent content in Posts on Esil Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sat, 02 Dec 2023 06:00:00 +0000</lastBuildDate><atom:link href="https://aesilevich.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 27 Mar 2024 06:00:00 +0000</lastBuildDate><atom:link href="https://aesilevich.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Заниманительная частичная специализация шаблонов</title>
+      <link>https://aesilevich.github.io/posts/2024-03-27-advanced-partial-instantiation/</link>
+      <pubDate>Wed, 27 Mar 2024 06:00:00 +0000</pubDate>
+      
+      <guid>https://aesilevich.github.io/posts/2024-03-27-advanced-partial-instantiation/</guid>
+      <description>Занимаясь одним из своих проектов, случайно для себя обнаружил, что частично специализировать вложенные шаблонные классы можно параметрами шаблонов, в которые они вложены.
+Например у нас есть шаблонный класс nested, вложенный в шаблонный класс str:
+template &amp;lt;typename X1, typename Y1&amp;gt; struct str { template &amp;lt;typename X2, typename Y2&amp;gt; struct nested { static constexpr bool is_spec = false; }; }; Мы можем сделать частичную специализацию класса nested, которая зависит от параметров шаблонного класса str:</description>
+    </item>
+    
     <item>
       <title>Декларативное описание UI на C&#43;&#43;20</title>
       <link>https://aesilevich.github.io/posts/2023-11-29-ull/</link>
@@ -15,17 +26,6 @@
       <description>Несколько лет назад у меня появилась идея как можно реализовать декларативное описание UI на современном C++. Наконец-то нашёл время и реализовал маленькую экспериментальную библиотеку.
 Ключевая идея заключается в том, что с помощью Class Template Argument Deduction (CTAD), добавленного в C++17, и Variadic Templates, которые существуют ещё с C++11, можно в compile time описывать сложные иерархические структуры данных с помощью фигурных скобок, без явного указания параметров шаблонов.
 Например, мы можем объявить класс widget для описания виджетов UI следующим образом:</description>
-    </item>
-    
-    <item>
-      <title>Заниманительная частичная специализация шаблонов</title>
-      <link>https://aesilevich.github.io/posts/2024-03-27-advanced-partial-instantiation/</link>
-      <pubDate>Sat, 02 Dec 2023 06:00:00 +0000</pubDate>
-      
-      <guid>https://aesilevich.github.io/posts/2024-03-27-advanced-partial-instantiation/</guid>
-      <description>Занимаясь одним из своих проектов, случайно для себя обнаружил, что частично специализировать вложенные шаблонные классы можно параметрами шаблонов, в которые они вложены.
-Например у нас есть шаблонный класс nested, вложенный в шаблонный класс str:
-template &amp;lt;typename X1, typename Y1&amp;gt; struct str { template &amp;lt;typename X2, typename Y2&amp;gt; struct nested { static constexpr bool is_spec = false; }; }; Мы можем сделать частичную специализацию класса nested, которая зависит от параметров шаблонного класса str:</description>
     </item>
     
     <item>
